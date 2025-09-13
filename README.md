@@ -30,8 +30,8 @@ To install the CLI utility globally, use the following command:
 dotnet tool install Bicep.LocalDeploy.DocGenerator -g
 ```
 
-Then, use the following command to generate documentation in the `Models`
-directory:
+Then, target a directory containing your Bicep model files. For example,
+the following command generates documentation in the `Models` directory:
 
 ```bash
 bicep-local-docgen generate --source Models

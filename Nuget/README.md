@@ -1,7 +1,5 @@
 
 <!-- markdownlint-disable MD041 -->
-![Bicep.LocalDeploy.DocGenerator](./banner.svg)
-
 The Bicep.LocalDeploy.DocGenerator project is a documentation tool to generate
 Markdown files based on .NET Bicep models. It assists by reading the attributes
 from the model you have defined for your Bicep `local-deploy` and generating
@@ -30,8 +28,8 @@ To install the CLI utility globally, use the following command:
 dotnet tool install Bicep.LocalDeploy.DocGenerator -g
 ```
 
-Then, use the following command to generate documentation in the `Models`
-directory:
+Then, target a directory containing your Bicep model files. For example,
+the following command generates documentation in the `Models` directory:
 
 ```bash
 bicep-local-docgen generate --source Models
