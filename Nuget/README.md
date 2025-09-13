@@ -54,10 +54,10 @@ dotnet add package Bicep.LocalDeploy --version <versionNumber>
 
 You can annotate your models with these attributes:
 
-- `[BicepDocMetadataAttribute]`: Adds documentation metadata (YAML front matter) as key/value pairs.
-- `[BicepMetadataAttribute]`: Adds model metadata as key/value pairs for the generator to consume.
+- `[BicepDocHeadingAttribute]`: Sets the first heading (H1) title and its description.
+- `[BicepFrontMatterAttribute]`: Adds YAML front matter key/value pairs.
 - `[BicepDocExampleAttribute]`: Adds example blocks (title, description, code[, language]).
-- `[BicepDocCustomAttribute]`: Adds custom sections (title, description, body) to the output.
+- `[BicepDocCustomAttribute]`: Adds custom sections (title, description).
 
 For example, imagine you've defined the following Bicep model:
 
@@ -104,16 +104,15 @@ Creating a basic MyOwnResource resource:
 If you add annotations in the following way:
 
 ```csharp
-[BicepDocMetadata("title", "My Own Resource")]
-[BicepDocMetadata("description", "Example resource used to demonstrate documentation generation.")]
-[BicepMetadata("category", "resource")]
+[BicepDocHeading("My Own Resource", "Example resource used to demonstrate documentation generation.")]
+[BicepFrontMatter("category", "resource")]
 [BicepDocExample(
         "Basic deployment",
         "Minimal example creating the resource.",
         @"resource my 'MyOwnResource' = {
 Resource: 'my-resource'
 }")]
-
+[BicepDocCustom("Custom Section", "This is a custom section.")]
 // Rest of the code
 ```
 
@@ -122,11 +121,10 @@ The produces output is the following Markdown:
 ```markdown
 <!-- myresource.md -->
 ---
-category: "workspace"
-title: "My Own Resource"
+category: "resource"
 ---
 
-# MyOwnResource
+# My Own Resource
 
 Example resource used to demonstrate documentation generation.
 
@@ -137,17 +135,14 @@ Example resource used to demonstrate documentation generation.
 Minimal example creating the resource.
 
     ```bicep
-    resource my 'resource my 'MyOwnResource' = {
-        Resource: 'my-resource'
+    resource my 'MyOwnResource' = {
+    Resource: 'my-resource'
     }
     ```
 
-## Notes
+## Custom Section
 
-Additional guidance
-
-- This section is added via BicepDocCustomAttribute
-- Use it for callouts, caveats, or links.
+This is a custom section.
 ```
 
 <!-- Link reference definitions -->

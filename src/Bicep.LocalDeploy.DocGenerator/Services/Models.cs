@@ -13,8 +13,11 @@ public sealed class TypeInfoModel
     public string SourceFile { get; set; } = string.Empty;
     public List<MemberInfoModel> Members { get; } = new();
     public List<string> BaseTypes { get; } = new();
-    public Dictionary<string, string> FrontMatter { get; } = new();
-    public string? Summary { get; set; }
+    // Supports multiple front matter blocks in order.
+    public List<Dictionary<string, string>> FrontMatterBlocks { get; } = new();
+    // Heading information (separate from front matter)
+    public string? HeadingTitle { get; set; }
+    public string? HeadingDescription { get; set; }
     public List<ExampleModel> Examples { get; } = new();
     public List<CustomSectionModel> CustomSections { get; } = new();
 }
@@ -43,5 +46,4 @@ public sealed class CustomSectionModel
 {
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public string Body { get; set; } = string.Empty; // Markdown body
 }

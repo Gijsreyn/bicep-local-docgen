@@ -95,7 +95,7 @@ public static class RoslynAnalyzer
                 var resourceTypeAttr = td
                     .AttributeLists.SelectMany(a => a.Attributes)
                     .FirstOrDefault(a =>
-                        a.Name.ToString().IndexOf("ResourceType", StringComparison.Ordinal) >= 0
+                        a.Name.ToString().Contains("ResourceType", StringComparison.Ordinal)
                     );
                 if (
                     resourceTypeAttr?.ArgumentList?.Arguments.FirstOrDefault()?.Expression
@@ -109,87 +109,83 @@ public static class RoslynAnalyzer
                     }
                 }
 
-                // BicepDocMetadata("key","value") for front matter, allow multiple
+                // BicepFrontMatter("key","value") and BicepFrontMatter(blockIndex:int, "key","value") for front matter blocks
                 foreach (var attr in td.AttributeLists.SelectMany(a => a.Attributes))
                 {
                     var attrName = attr.Name.ToString();
-                    if (
-                        attrName.IndexOf("BicepDocMetadata", StringComparison.Ordinal) >= 0
-                        && attr.ArgumentList?.Arguments.Count >= 2
-                    )
+                    if (attrName.Contains("BicepFrontMatter", StringComparison.Ordinal)
+                        && attr.ArgumentList?.Arguments.Count >= 2)
                     {
-                        if (
-                            attr.ArgumentList.Arguments[0].Expression is LiteralExpressionSyntax k
-                            && attr.ArgumentList.Arguments[1].Expression
-                                is LiteralExpressionSyntax v
-                        )
+                        var args = attr.ArgumentList.Arguments;
+                        // Form 1: (key, value)
+                        if (args.Count == 2
+                            && args[0].Expression is LiteralExpressionSyntax k1
+                            && args[1].Expression is LiteralExpressionSyntax v1)
                         {
-                            var key = k.Token.ValueText;
-                            var value = v.Token.ValueText;
-                            if (
-                                string.Equals(
-                                    key,
-                                    "Description",
-                                    StringComparison.OrdinalIgnoreCase
-                                )
-                            )
+                            var key = k1.Token.ValueText;
+                            var value = v1.Token.ValueText;
+                            // Also mirror into block 1 of FrontMatterBlocks
+                            if (type.FrontMatterBlocks.Count == 0)
                             {
-                                type.Summary = value;
+                                type.FrontMatterBlocks.Add(new Dictionary<string, string>());
+                            }
+                            var block1 = type.FrontMatterBlocks[0];
+                            if (!block1.ContainsKey(key))
+                            {
+                                block1[key] = value;
                                 if (options.Verbose)
                                 {
-                                    Console.WriteLine($"  Metadata: Description -> Summary");
+                                    Console.WriteLine($"  FrontMatter: {key} = '{value}'");
                                 }
                             }
-                            else if (!type.FrontMatter.ContainsKey(key))
+                        }
+                        // Form 2: (blockIndex:int, key, value)
+                        else if (args.Count >= 3
+                            && args[0].Expression is LiteralExpressionSyntax b
+                            && int.TryParse(b.Token.ValueText, out var blockIndex)
+                            && args[1].Expression is LiteralExpressionSyntax k2
+                            && args[2].Expression is LiteralExpressionSyntax v2)
+                        {
+                            if (blockIndex < 1)
                             {
-                                type.FrontMatter[key] = value;
+                                blockIndex = 1;
+                            }
+                            var key = k2.Token.ValueText;
+                            var value = v2.Token.ValueText;
+                            // Ensure list size
+                            while (type.FrontMatterBlocks.Count < blockIndex)
+                            {
+                                type.FrontMatterBlocks.Add(new Dictionary<string, string>());
+                            }
+                            var block = type.FrontMatterBlocks[blockIndex - 1];
+                            if (!block.ContainsKey(key))
+                            {
+                                block[key] = value;
                                 if (options.Verbose)
                                 {
-                                    Console.WriteLine($"  Metadata: {key} = '{value}'");
+                                    Console.WriteLine($"  FrontMatter[{blockIndex}]: {key} = '{value}'");
                                 }
                             }
                         }
                     }
-                    else if (
-                        attrName.IndexOf("BicepMetadata", StringComparison.Ordinal) >= 0
-                        && attr.ArgumentList?.Arguments.Count >= 2
-                    )
+                    else if (attrName.Contains("BicepDocHeading", StringComparison.Ordinal)
+                             && attr.ArgumentList?.Arguments.Count >= 2)
                     {
-                        if (
-                            attr.ArgumentList.Arguments[0].Expression is LiteralExpressionSyntax mk
-                            && attr.ArgumentList.Arguments[1].Expression
-                                is LiteralExpressionSyntax mv
-                        )
+                        var args = attr.ArgumentList.Arguments;
+                        if (args[0].Expression is LiteralExpressionSyntax ht
+                            && args[1].Expression is LiteralExpressionSyntax hd)
                         {
-                            var key = mk.Token.ValueText;
-                            var value = mv.Token.ValueText;
-                            // If key is Description, map to Summary; else store in front matter
-                            if (
-                                string.Equals(
-                                    key,
-                                    "Description",
-                                    StringComparison.OrdinalIgnoreCase
-                                )
-                            )
+                            type.HeadingTitle = ht.Token.ValueText;
+                            type.HeadingDescription = hd.Token.ValueText;
+                            if (options.Verbose)
                             {
-                                type.Summary = value;
-                                if (options.Verbose)
-                                {
-                                    Console.WriteLine($"  Metadata: Description -> Summary");
-                                }
-                            }
-                            else if (!type.FrontMatter.ContainsKey(key))
-                            {
-                                type.FrontMatter[key] = value;
-                                if (options.Verbose)
-                                {
-                                    Console.WriteLine($"  Metadata: {key} = '{value}'");
-                                }
+                                Console.WriteLine($"  Heading: '{type.HeadingTitle}'");
                             }
                         }
                     }
+                    // No else: the legacy BicepMetadata/BicepDocMetadata are removed.
                     else if (
-                        attrName.IndexOf("BicepDocExample", StringComparison.Ordinal) >= 0
+                        attrName.Contains("BicepDocExample", StringComparison.Ordinal)
                         && attr.ArgumentList?.Arguments.Count >= 3
                     )
                     {
@@ -224,22 +220,20 @@ public static class RoslynAnalyzer
                         }
                     }
                     else if (
-                        attrName.IndexOf("BicepDocCustom", StringComparison.Ordinal) >= 0
-                        && attr.ArgumentList?.Arguments.Count >= 3
+                        attrName.Contains("BicepDocCustom", StringComparison.Ordinal)
+                        && attr.ArgumentList?.Arguments.Count >= 2
                     )
                     {
                         var args = attr.ArgumentList.Arguments;
                         if (
                             args[0].Expression is LiteralExpressionSyntax tt
                             && args[1].Expression is LiteralExpressionSyntax dd
-                            && args[2].Expression is LiteralExpressionSyntax bb
                         )
                         {
                             var section = new CustomSectionModel
                             {
                                 Title = tt.Token.ValueText,
                                 Description = dd.Token.ValueText,
-                                Body = bb.Token.ValueText,
                             };
                             type.CustomSections.Add(section);
                             if (options.Verbose)
@@ -281,7 +275,7 @@ public static class RoslynAnalyzer
                     var typePropAttr = prop
                         .AttributeLists.SelectMany(a => a.Attributes)
                         .FirstOrDefault(a =>
-                            a.Name.ToString().IndexOf("TypeProperty", StringComparison.Ordinal) >= 0
+                            a.Name.ToString().Contains("TypeProperty", StringComparison.Ordinal)
                         );
 
                     if (typePropAttr is not null)
@@ -300,12 +294,9 @@ public static class RoslynAnalyzer
                             var flagsText = typePropAttr
                                 .ArgumentList.Arguments[1]
                                 .Expression.ToString();
-                            mi.IsRequired =
-                                flagsText.IndexOf("Required", StringComparison.Ordinal) >= 0;
-                            mi.IsReadOnly =
-                                flagsText.IndexOf("ReadOnly", StringComparison.Ordinal) >= 0;
-                            mi.IsIdentifier =
-                                flagsText.IndexOf("Identifier", StringComparison.Ordinal) >= 0;
+                            mi.IsRequired = flagsText.Contains("Required", StringComparison.Ordinal);
+                            mi.IsReadOnly = flagsText.Contains("ReadOnly", StringComparison.Ordinal);
+                            mi.IsIdentifier = flagsText.Contains("Identifier", StringComparison.Ordinal);
                         }
                         if (options.Verbose)
                         {

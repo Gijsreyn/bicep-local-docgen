@@ -83,23 +83,32 @@ public sealed class DocumentationGenerator
         var outputs = type.Members.Where(m => m.IsReadOnly).OrderBy(m => m.Name).ToList();
 
         var sb = new StringBuilder();
-        // YAML front matter if any
-        if (type.FrontMatter.Count > 0)
+        // YAML front matter blocks
+        if (type.FrontMatterBlocks.Count > 0)
         {
-            sb.AppendLine("---");
-            foreach (var kvp in type.FrontMatter.OrderBy(k => k.Key, StringComparer.Ordinal))
+            foreach (var block in type.FrontMatterBlocks)
             {
-                sb.AppendLine($"{ToKebab(kvp.Key)}: \"{kvp.Value}\"");
+                sb.AppendLine("---");
+                foreach (var kvp in block.OrderBy(k => k.Key, StringComparer.Ordinal))
+                {
+                    sb.AppendLine($"{ToKebab(kvp.Key)}: \"{kvp.Value}\"");
+                }
+                sb.AppendLine("---");
+                sb.AppendLine();
             }
-            sb.AppendLine("---");
-            sb.AppendLine();
         }
-
-        sb.AppendLine($"# {type.ResourceTypeName ?? "<handlerName>"}");
+        // Heading (H1) comes from BicepDocHeading attribute; fall back to front matter title; then resource name
+        string? fmTitle = GetFrontMatterValue(
+            type.FrontMatterBlocks.FirstOrDefault() ?? new Dictionary<string, string>(),
+            "title"
+        );
+        var title = type.HeadingTitle ?? fmTitle ?? type.ResourceTypeName ?? "<handlerName>";
+        sb.AppendLine($"# {title}");
         sb.AppendLine();
-        if (!string.IsNullOrWhiteSpace(type.Summary))
+        // Description under H1
+        if (!string.IsNullOrWhiteSpace(type.HeadingDescription))
         {
-            sb.AppendLine(type.Summary);
+            sb.AppendLine(type.HeadingDescription);
         }
         else
         {
@@ -198,15 +207,23 @@ public sealed class DocumentationGenerator
                     sb.AppendLine(section.Description);
                     sb.AppendLine();
                 }
-                if (!string.IsNullOrWhiteSpace(section.Body))
-                {
-                    sb.AppendLine(section.Body);
-                    sb.AppendLine();
-                }
             }
         }
 
         return sb.ToString();
+    }
+
+    private static string? GetFrontMatterValue(IReadOnlyDictionary<string, string> frontMatter, string key)
+    {
+        // Case-insensitive lookup so either "title" or "Title" works
+        foreach (var kvp in frontMatter)
+        {
+            if (string.Equals(kvp.Key, key, StringComparison.OrdinalIgnoreCase))
+            {
+                return kvp.Value;
+            }
+        }
+        return null;
     }
 
     private static void AppendExamples(
