@@ -15,17 +15,17 @@ Each subcommand provides help information. If you call
 `bicep-local-docgen generate --help`, it shows you the help
 description for the options available.
 
-| Project                              | Description                                                            |
-|--------------------------------------|------------------------------------------------------------------------|
-| [Bicep.LocalDeploy][00]              | Library for Bicep model annotations                                    |
-| [Bicep.LocalDeploy.DocGenerator][01] | CLI utility to generate Markdown files from Bicep models (`*cs`) files |
+| Project                  | Description                                                            |
+|--------------------------|------------------------------------------------------------------------|
+| [Bicep.LocalDeploy][00]  | Library for Bicep model annotations                                    |
+| [bicep-local-docgen][01] | CLI utility to generate Markdown files from Bicep models (`*cs`) files |
 
 ## Getting started
 
 To install the CLI utility globally, use the following command:
 
 ```bash
-dotnet tool install Bicep.LocalDeploy.DocGenerator -g
+dotnet tool install bicep-local-docgen -g
 ```
 
 Then, target a directory containing your Bicep model files. For example,
@@ -147,4 +147,4 @@ This is a custom section.
 
 <!-- Link reference definitions -->
 [00]: https://www.nuget.org/packages/Bicep.LocalDeploy
-[01]: https://www.nuget.org/packages/Bicep.LocalDeploy.DocGenerator
+[01]: https://www.nuget.org/packages/bicep-local-docgen
