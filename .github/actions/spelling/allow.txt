@@ -28,3 +28,4 @@ workflows
 chatmodes
 callouts
 myresource
+cref
