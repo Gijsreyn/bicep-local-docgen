@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../Nuget/Build.Library.props" />
+  <PropertyGroup>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>13</LangVersion>
+    <PackageId>Bicep.LocalDeploy</PackageId>
+    <Title>Bicep Local Deploy - Attributes</Title>
+    <Description>Attributes for annotating C# models for Bicep Local Deploy documentation.</Description>
+    <Authors>Gijsreyn</Authors>
+    <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
+    <PackageTags>bicep;documentation;attributes</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\logo.png" Pack="true" PackagePath="">
+      <Link>logo.png</Link>
+    </None>
+  </ItemGroup>
+</Project>

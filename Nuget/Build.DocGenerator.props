@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>Bicep Local Deploy documentation is a tool for generating documentation from Bicep C# models.</Description>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Copyright>© 2025 Gijs Reijn. All rights reserved.</Copyright>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

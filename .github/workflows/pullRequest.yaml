@@ -1,0 +1,26 @@
+name: Validate Pull Request
+on:
+  pull_request:
+    branches: [main]
+env:
+  SOLUTION_FILE: bicep-local-docgen.sln
+jobs:
+  # run_tests:
+  #   runs-on: ubuntu-latest
+  #   name: Run Tests
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-dotnet@v3
+      # - run: |
+      #     dotnet test "${{ env.SOLUTION_FILE }}" \
+      #       --configuration Release \
+      #       --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true" \
+      #       -- \
+      #       RunConfiguration.CollectSourceInformation=true
+  no_warnings:
+      runs-on: ubuntu-latest
+      name: No Warnings
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-dotnet@v3
+        - run: dotnet build "${{ env.SOLUTION_FILE }}" -c release -p:TreatWarningsAsErrors=true

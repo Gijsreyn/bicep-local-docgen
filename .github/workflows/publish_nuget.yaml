@@ -1,0 +1,40 @@
+name: Publish Nuget
+on:
+  push:
+    branches: [ main ]
+jobs:
+  # test:
+  #   runs-on: ubuntu-latest
+  #   name: test
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions/setup-dotnet@v3
+  #     - run: >
+  #         dotnet test Src/Bicep.LocalDeploy.DocGenerator/Bicep.LocalDeploy.DocGenerator.csproj
+  #         --configuration Release
+  #         --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+  #         --
+  #         RunConfiguration.CollectSourceInformation=true
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    name: publish nuget
+    # needs: test
+    env:
+      VERSION_FILE_PATH: Nuget/Build.props
+      NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v3
+      - name: Publish Bicep.LocalDeploy library on version change
+        uses: alirezanet/publish-nuget@v3.1.0
+        with:
+          PACKAGE_NAME: Bicep.LocalDeploy
+          PROJECT_FILE_PATH: src/Bicep.LocalDeploy/Bicep.LocalDeploy.csproj
+          VERSION_FILE_PATH: Nuget/Build.Library.props
+      - name: Publish Bicep.LocalDeploy.DocGenerator dotnet tool on version change
+        uses: alirezanet/publish-nuget@v3.1.0
+        with:
+          PACKAGE_NAME: Bicep.LocalDeploy.DocGenerator
+          PROJECT_FILE_PATH: src/Bicep.LocalDeploy.DocGenerator/Bicep.LocalDeploy.DocGenerator.csproj
+          VERSION_FILE_PATH: Nuget/Build.DocGenerator.props
