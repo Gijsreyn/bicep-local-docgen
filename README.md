@@ -154,8 +154,10 @@ Additional guidance
 
 ## Contributing
 
-<!-- TODO: Add contributing.md -->
+Want to contribute to the project? We'd love to have you! Visit our [CONTRIBUTING.md][02]
+for a jump start.
 
 <!-- Link reference definitions -->
 [00]: https://www.nuget.org/packages/Bicep.LocalDeploy
 [01]: https://www.nuget.org/packages/Bicep.LocalDeploy.DocGenerator
+[02]: CONTRIBUTING.md
