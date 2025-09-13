@@ -4,7 +4,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <Description>Bicep Local Deploy library for annotating C# models for Bicep Local Deploy documentation..</Description>
+    <Description>Bicep Local Deploy library for annotating C# models for Bicep Local Deploy documentation.</Description>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
