@@ -28,11 +28,11 @@ release.
 We welcome anyone that wants to contribute to `bicep-local-docgen` to triage and reply to
 open issues to help troubleshoot and fix existing bugs. Here is what you can do:
 
-- Help ensure that existing issues follows the recommendations from the _[Reporting Issues][01]_
-  section, providing feedback to the issue's author on what might be missing.
-  instructions and code samples.
-- Review existing pull requests, and testing patches against real existing applications that use
-  `bicep-local-docgen`.
+- Help ensure that existing issues follows the recommendations from the
+  _[Reporting Issues][01]_ section, providing feedback to the issue's author
+  on what might be missing. instructions and code samples.
+- Review existing pull requests, and testing patches against real existing applications
+  that use `bicep-local-docgen`.
 - Write a test, or add a missing test case to an existing test.
 
 Thanks again for your interest on contributing to `bicep-local-docgen`!
