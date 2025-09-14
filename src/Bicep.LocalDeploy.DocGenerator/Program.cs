@@ -70,13 +70,7 @@ namespace Bicep.LocalDeploy.DocGenerator
             cmd.Add(forceOption);
 
             cmd.SetHandler(
-                async (
-                    DirectoryInfo source,
-                    DirectoryInfo output,
-                    string[] patterns,
-                    bool verbose,
-                    bool force
-                ) =>
+                (source, output, patterns, verbose, force) =>
                 {
                     GenerationOptions options = new()
                     {
@@ -87,7 +81,7 @@ namespace Bicep.LocalDeploy.DocGenerator
                         Force = force,
                     };
 
-                    await DocumentationGenerator.GenerateAsync(options);
+                    return DocumentationGenerator.GenerateAsync(options);
                 },
                 sourceOption,
                 outputOption,
