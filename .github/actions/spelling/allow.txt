@@ -30,4 +30,8 @@ callouts
 myresource
 cref
 Idx
+emph
+idx
 IEnumerable
+inlines
+NUnit
