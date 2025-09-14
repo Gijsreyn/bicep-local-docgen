@@ -3,20 +3,20 @@ on:
   pull_request:
     branches: [main]
 env:
-  SOLUTION_FILE: bicep-local-docgen.sln
+  SOLUTION_FILE: Bicep.LocalDeploy.sln
 jobs:
-  # run_tests:
-  #   runs-on: ubuntu-latest
-  #   name: Run Tests
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions/setup-dotnet@v3
-      # - run: |
-      #     dotnet test "${{ env.SOLUTION_FILE }}" \
-      #       --configuration Release \
-      #       --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true" \
-      #       -- \
-      #       RunConfiguration.CollectSourceInformation=true
+  run_tests:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v3
+      - run: |
+          dotnet test "${{ env.SOLUTION_FILE }}" \
+            --configuration Release \
+            --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true" \
+            -- \
+            RunConfiguration.CollectSourceInformation=true
   no_warnings:
       runs-on: ubuntu-latest
       name: No Warnings
@@ -24,3 +24,13 @@ jobs:
         - uses: actions/checkout@v2
         - uses: actions/setup-dotnet@v3
         - run: dotnet build "${{ env.SOLUTION_FILE }}" -c release -p:TreatWarningsAsErrors=true
+      
+  check_formatting:
+    runs-on: ubuntu-latest
+    name: Check Formatting
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v3
+      - run: |
+          dotnet tool restore
+          dotnet csharpier check .

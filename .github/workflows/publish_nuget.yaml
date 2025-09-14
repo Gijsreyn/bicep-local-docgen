@@ -15,14 +15,6 @@ jobs:
           --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
           --
           RunConfiguration.CollectSourceInformation=true
-  no_warnings:
-    runs-on: ubuntu-latest
-    name: No Warnings
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-dotnet@v3
-      - run: >
-          dotnet build Bicep.LocalDeploy.sln -c release -p:TreatWarningsAsErrors=true
 
   publish-nuget:
     runs-on: ubuntu-latest
