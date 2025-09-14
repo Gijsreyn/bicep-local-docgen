@@ -12,6 +12,7 @@
     <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
     <PackageTags>bicep;documentation;attributes</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
