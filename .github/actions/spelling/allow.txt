@@ -29,3 +29,5 @@ chatmodes
 callouts
 myresource
 cref
+Idx
+IEnumerable
