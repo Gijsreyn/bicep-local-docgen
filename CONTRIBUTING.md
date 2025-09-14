@@ -15,18 +15,19 @@ as much relevant information as possible, and, if possible, a test case.
 
 ## Sending Pull Requests
 
-Before sending a new pull request, take a look at existing pull requests and issues to
-see if the proposed change or fix has been discussed in the past, or if the change was
-already implemented but not yet released.
+Before sending a new pull request, take a look at existing pull requests and
+issues to see if the proposed change or fix has been discussed in the past,
+or if the change was already implemented but not yet released.
 
-We expect new pull requests to include tests for any affected behavior, and, as we
-follow semantic versioning, we may reserve breaking changes until the next major version
-release.
+We expect new pull requests to include tests for any affected behavior, and, as
+we follow semantic versioning, we may reserve breaking changes until the next
+major version release.
 
 ## Other Ways to Contribute
 
-We welcome anyone that wants to contribute to `bicep-local-docgen` to triage and reply to
-open issues to help troubleshoot and fix existing bugs. Here is what you can do:
+We welcome anyone that wants to contribute to `bicep-local-docgen` to triage
+and reply to open issues to help troubleshoot and fix existing bugs.
+Here is what you can do:
 
 - Help ensure that existing issues follows the recommendations from the
   _[Reporting Issues][01]_ section, providing feedback to the issue's author

@@ -35,3 +35,4 @@ idx
 IEnumerable
 inlines
 NUnit
+versioning
