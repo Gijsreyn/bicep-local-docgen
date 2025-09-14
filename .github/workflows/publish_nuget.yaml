@@ -10,10 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v3
       - run: >
-          dotnet build --configuration Release src/Bicep.LocalDeploy/Bicep.LocalDeploy.csproj
-      - run: >
           dotnet test src/Bicep.LocalDeploy.DocGenerator/Bicep.LocalDeploy.DocGenerator.csproj
-          --no-build
           --configuration Release
           --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
           --
@@ -24,7 +21,6 @@ jobs:
     name: publish nuget
     needs: test
     env:
-      VERSION_FILE_PATH: Nuget/Build.props
       NUGET_KEY: ${{secrets.NUGET_API_KEY}}
     steps:
       - uses: actions/checkout@v2

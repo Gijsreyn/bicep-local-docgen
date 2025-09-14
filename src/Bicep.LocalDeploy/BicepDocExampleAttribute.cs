@@ -1,32 +1,22 @@
-using System;
-
-namespace Bicep.LocalDeploy;
-
-[AttributeUsage(
-    AttributeTargets.Class | AttributeTargets.Struct,
-    AllowMultiple = true,
-    Inherited = true
-)]
-public sealed class BicepDocExampleAttribute : Attribute
+namespace Bicep.LocalDeploy
 {
-    public BicepDocExampleAttribute(string title, string description, string code)
+    /// <summary>
+    /// Adds an example block to the generated documentation, including a title, description, code snippet, and optional language (defaults to bicep).
+    /// </summary>
+    [AttributeUsage(
+        AttributeTargets.Class | AttributeTargets.Struct,
+        AllowMultiple = true,
+        Inherited = true
+    )]
+    public sealed class BicepDocExampleAttribute(string title, string description, string code, string? language = null) : Attribute
     {
-        Title = title;
-        Description = description;
-        Code = code;
-        Language = "bicep";
+        /// <summary>The example title (rendered as an H3).</summary>
+        public string Title { get; } = title;
+        /// <summary>A description paragraph for the example.</summary>
+        public string Description { get; } = description;
+        /// <summary>The example code snippet.</summary>
+        public string Code { get; } = code;
+        /// <summary>The code language for fenced code blocks (defaults to "bicep").</summary>
+        public string Language { get; } = string.IsNullOrWhiteSpace(language) ? "bicep" : language;
     }
-
-    public BicepDocExampleAttribute(string title, string description, string code, string language)
-    {
-        Title = title;
-        Description = description;
-        Code = code;
-        Language = language;
-    }
-
-    public string Title { get; }
-    public string Description { get; }
-    public string Code { get; }
-    public string Language { get; }
 }

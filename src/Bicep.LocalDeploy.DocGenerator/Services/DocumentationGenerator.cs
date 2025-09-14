@@ -1,11 +1,18 @@
-using System.Linq;
+using System.Globalization;
 using System.Text;
 
 namespace Bicep.LocalDeploy.DocGenerator.Services;
 
+/// <summary>
+/// Generates Markdown documentation files from analyzed Bicep model metadata.
+/// </summary>
 public sealed class DocumentationGenerator
 {
-    public async Task GenerateAsync(GenerationOptions options)
+    /// <summary>
+    /// Generates documentation for all resource types found by the analyzer and writes files to the output directory.
+    /// </summary>
+    /// <param name="options">Generation options controlling source, output, verbosity, and overwrite behavior.</param>
+    public static async Task GenerateAsync(GenerationOptions options)
     {
         if (!options.OutputDirectory.Exists)
         {
@@ -15,7 +22,7 @@ public sealed class DocumentationGenerator
         var analysis = await RoslynAnalyzer.AnalyzeAsync(options);
 
         // Only consider types with ResourceType attribute
-        var resources = analysis.Types.Where(t => t.ResourceTypeName is not null).ToList();
+    List<TypeInfoModel> resources = analysis.Types.Where(t => t.ResourceTypeName is not null).ToList();
 
         if (options.Verbose)
         {
@@ -25,14 +32,14 @@ public sealed class DocumentationGenerator
         }
 
         // Build lookup for type nesting
-        var typeLookup = analysis.Types.ToDictionary(t => t.Name, t => t);
+    IReadOnlyDictionary<string, TypeInfoModel> typeLookup = analysis.Types.ToDictionary(t => t.Name, t => t);
 
         foreach (var type in resources)
         {
-            var md = GenerateMarkdownForType(type, typeLookup);
-            var name = (type.ResourceTypeName ?? type.Name).ToLowerInvariant();
-            var file = Path.Combine(options.OutputDirectory.FullName, $"{name}.md");
-            var exists = File.Exists(file);
+            string md = GenerateMarkdownForType(type, typeLookup);
+            string name = (type.ResourceTypeName ?? type.Name).ToLowerInvariant();
+            string file = Path.Combine(options.OutputDirectory.FullName, $"{name}.md");
+            bool exists = File.Exists(file);
 
             if (exists && !options.Force)
             {
@@ -44,8 +51,8 @@ public sealed class DocumentationGenerator
                 continue;
             }
 
-            var mode = exists ? FileMode.Truncate : FileMode.Create;
-            using var stream = new FileStream(
+            FileMode mode = exists ? FileMode.Truncate : FileMode.Create;
+            using FileStream stream = new FileStream(
                 file,
                 mode,
                 FileAccess.Write,
@@ -53,7 +60,7 @@ public sealed class DocumentationGenerator
                 4096,
                 useAsync: true
             );
-            using var writer = new StreamWriter(stream, Encoding.UTF8);
+            using StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
             await writer.WriteAsync(md);
 
             if (options.Verbose && !exists)
@@ -68,43 +75,43 @@ public sealed class DocumentationGenerator
         IReadOnlyDictionary<string, TypeInfoModel> typeLookup
     )
     {
-        var resourceName = type.ResourceTypeName ?? type.Name;
+        string resourceName = type.ResourceTypeName ?? type.Name;
 
-        var requiredArgs = type
+        List<MemberInfoModel> requiredArgs = type
             .Members.Where(m => m.IsRequired && !m.IsReadOnly)
             .OrderBy(m => m.Name)
             .ToList();
 
-        var optionalArgs = type
+        List<MemberInfoModel> optionalArgs = type
             .Members.Where(m => !m.IsRequired && !m.IsReadOnly)
             .OrderBy(m => m.Name)
             .ToList();
 
-        var outputs = type.Members.Where(m => m.IsReadOnly).OrderBy(m => m.Name).ToList();
+        List<MemberInfoModel> outputs = type.Members.Where(m => m.IsReadOnly).OrderBy(m => m.Name).ToList();
 
-        var sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         // YAML front matter blocks
         if (type.FrontMatterBlocks.Count > 0)
         {
-            foreach (var block in type.FrontMatterBlocks)
+            foreach (Dictionary<string, string> block in type.FrontMatterBlocks)
             {
                 sb.AppendLine("---");
-                foreach (var kvp in block.OrderBy(k => k.Key, StringComparer.Ordinal))
+                foreach (KeyValuePair<string, string> kvp in block.OrderBy(k => k.Key, StringComparer.Ordinal))
                 {
-                    sb.AppendLine($"{ToKebab(kvp.Key)}: \"{kvp.Value}\"");
+                    sb.AppendLine(CultureInfo.InvariantCulture, $"{ToKebab(kvp.Key)}: \"{kvp.Value}\"");
                 }
                 sb.AppendLine("---");
                 sb.AppendLine();
             }
         }
         // Heading (H1) comes from BicepDocHeading attribute; fall back to front matter title; then resource name
-        string? fmTitle = GetFrontMatterValue(
+    string? fmTitle = GetFrontMatterValue(
             type.FrontMatterBlocks.FirstOrDefault() ?? new Dictionary<string, string>(),
             "title"
         );
-        var title = type.HeadingTitle ?? fmTitle ?? type.ResourceTypeName ?? "<handlerName>";
-        sb.AppendLine($"# {title}");
-        sb.AppendLine();
+        string title = type.HeadingTitle ?? fmTitle ?? type.ResourceTypeName ?? "<handlerName>";
+    sb.AppendLine(CultureInfo.InvariantCulture, $"# {title}");
+    sb.AppendLine();
         // Description under H1
         if (!string.IsNullOrWhiteSpace(type.HeadingDescription))
         {
@@ -112,41 +119,41 @@ public sealed class DocumentationGenerator
         }
         else
         {
-            sb.AppendLine($"Manages {resourceName} resources.");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"Manages {resourceName} resources.");
         }
         sb.AppendLine();
 
         // Examples: if custom examples provided via attributes, render those; else use defaults
         if (type.Examples.Count > 0)
         {
-            sb.AppendLine("## Example usage");
-            sb.AppendLine();
-            foreach (var ex in type.Examples)
+        sb.AppendLine("## Example usage");
+        sb.AppendLine();
+            foreach (ExampleModel ex in type.Examples)
             {
                 if (!string.IsNullOrWhiteSpace(ex.Title))
                 {
-                    sb.AppendLine($"### {ex.Title}");
-                    sb.AppendLine();
+                    sb.AppendLine(CultureInfo.InvariantCulture, $"### {ex.Title}");
+            sb.AppendLine();
                 }
                 if (!string.IsNullOrWhiteSpace(ex.Description))
                 {
-                    sb.AppendLine(ex.Description);
-                    sb.AppendLine();
+            sb.AppendLine(ex.Description);
+            sb.AppendLine();
                 }
-                var lang = string.IsNullOrWhiteSpace(ex.Language) ? "bicep" : ex.Language;
-                sb.AppendLine($"```{lang}");
-                var code = (ex.Code ?? string.Empty).Trim('\r', '\n');
+                string lang = string.IsNullOrWhiteSpace(ex.Language) ? "bicep" : ex.Language;
+                sb.AppendLine(CultureInfo.InvariantCulture, $"```{lang}");
+                string code = (ex.Code ?? string.Empty).Trim('\r', '\n');
                 sb.Append(code);
                 if (code.Length > 0)
                 {
-                    var last = code[code.Length - 1];
+                    char last = code[^1];
                     if (last != '\n' && last != '\r')
                     {
-                        sb.AppendLine();
+            sb.AppendLine();
                     }
                 }
-                sb.AppendLine("```");
-                sb.AppendLine();
+        sb.AppendLine("```");
+        sb.AppendLine();
             }
         }
         else
@@ -162,11 +169,11 @@ public sealed class DocumentationGenerator
             sb.AppendLine("The following arguments are available:");
             sb.AppendLine();
 
-            foreach (var m in requiredArgs)
+            foreach (MemberInfoModel m in requiredArgs)
             {
                 AppendMemberWithNesting(sb, m, isOutput: false, typeLookup: typeLookup);
             }
-            foreach (var m in optionalArgs)
+            foreach (MemberInfoModel m in optionalArgs)
             {
                 AppendMemberWithNesting(sb, m, isOutput: false, typeLookup: typeLookup);
             }
@@ -179,12 +186,10 @@ public sealed class DocumentationGenerator
         {
             sb.AppendLine("## Attribute reference");
             sb.AppendLine();
-            sb.AppendLine(
-                "In addition to all arguments above, the following attributes are outputted:"
-            );
+            sb.AppendLine("In addition to all arguments above, the following attributes are outputted:");
             sb.AppendLine();
 
-            foreach (var m in outputs)
+            foreach (MemberInfoModel m in outputs)
             {
                 AppendMemberWithNesting(sb, m, isOutput: true, typeLookup: typeLookup);
             }
@@ -195,17 +200,17 @@ public sealed class DocumentationGenerator
         // Custom sections (if any) appended at the end in chronological order
         if (type.CustomSections.Count > 0)
         {
-            foreach (var section in type.CustomSections)
+        foreach (CustomSectionModel section in type.CustomSections)
             {
                 if (!string.IsNullOrWhiteSpace(section.Title))
                 {
-                    sb.AppendLine($"## {section.Title}");
-                    sb.AppendLine();
+            sb.AppendLine(CultureInfo.InvariantCulture, $"## {section.Title}");
+            sb.AppendLine();
                 }
                 if (!string.IsNullOrWhiteSpace(section.Description))
                 {
-                    sb.AppendLine(section.Description);
-                    sb.AppendLine();
+            sb.AppendLine(section.Description);
+            sb.AppendLine();
                 }
             }
         }
@@ -233,28 +238,28 @@ public sealed class DocumentationGenerator
         List<MemberInfoModel> optionalArgs
     )
     {
-        sb.AppendLine("## Example usage");
-        sb.AppendLine();
+    sb.AppendLine("## Example usage");
+    sb.AppendLine();
 
         // Basic example (only required)
-        sb.AppendLine($"### Basic {resourceName}");
-        sb.AppendLine();
-        sb.AppendLine($"Creating a basic {resourceName} resource:");
-        sb.AppendLine();
-        sb.AppendLine("```bicep");
+    sb.AppendLine(CultureInfo.InvariantCulture, $"### Basic {resourceName}");
+    sb.AppendLine();
+    sb.AppendLine(CultureInfo.InvariantCulture, $"Creating a basic {resourceName} resource:");
+    sb.AppendLine();
+    sb.AppendLine("```bicep");
         sb.Append(GenerateBicep(resourceName, requiredArgs));
-        sb.AppendLine("```");
-        sb.AppendLine();
+    sb.AppendLine("```");
+    sb.AppendLine();
 
         // If there are optional args, add an advanced example
         if (optionalArgs.Count > 0)
         {
-            sb.AppendLine($"### Advanced {resourceName}");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"### Advanced {resourceName}");
             sb.AppendLine();
-            sb.AppendLine($"Creating a {resourceName} resource with optional settings:");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"Creating a {resourceName} resource with optional settings:");
             sb.AppendLine();
             sb.AppendLine("```bicep");
-            var all = new List<MemberInfoModel>();
+            List<MemberInfoModel> all = new List<MemberInfoModel>(requiredArgs.Count + optionalArgs.Count);
             all.AddRange(requiredArgs);
             all.AddRange(optionalArgs);
             sb.Append(GenerateBicep(resourceName, all));
@@ -265,30 +270,30 @@ public sealed class DocumentationGenerator
 
     private static string GenerateBicep(string resourceName, List<MemberInfoModel> props)
     {
-        var varName = ToCamel(resourceName);
-        var sb = new StringBuilder();
-        sb.AppendLine($"resource {varName} '{resourceName}' = {{");
-        foreach (var p in props)
+        string varName = ToCamel(resourceName);
+    StringBuilder sb = new StringBuilder();
+        sb.AppendLine(CultureInfo.InvariantCulture, $"resource {varName} '{resourceName}' = {{");
+        foreach (MemberInfoModel p in props)
         {
-            sb.AppendLine($"  {ToCamel(p.Name)}: {ExampleFor(p)}");
+            sb.AppendLine(CultureInfo.InvariantCulture, $"  {ToCamel(p.Name)}: {ExampleFor(p)}");
         }
-        sb.AppendLine("}");
+    sb.AppendLine("}");
         return sb.ToString();
     }
 
     private static string ExampleFor(MemberInfoModel p)
     {
-        var type = p.Type.TrimEnd('?');
-        return type switch
+    string type = p.Type.TrimEnd('?');
+    return type switch
         {
-            "string" or "String" => p.Name.IndexOf("path", StringComparison.OrdinalIgnoreCase) >= 0
+            "string" or "String" => p.Name.Contains("path", StringComparison.OrdinalIgnoreCase)
                 ? "'/Path/example/test'"
                 : "'example'",
             "bool" or "Boolean" => "true",
             "int" or "Int32" or "long" or "Int64" => "1",
             "double" or "float" or "Single" or "Decimal" or "decimal" => "1.0",
-            _ when type.IndexOf("[]", StringComparison.Ordinal) >= 0
-                    || type.IndexOf("List<", StringComparison.Ordinal) >= 0 => "[]",
+        _ when type.Contains("[]", StringComparison.Ordinal)
+            || type.Contains("List<", StringComparison.Ordinal) => "[]",
             _ when p.IsEnum && p.EnumValues.Count > 0 => $"'{p.EnumValues.First()}'",
             _ => "{}",
         };
@@ -297,16 +302,20 @@ public sealed class DocumentationGenerator
     private static string ToCamel(string name)
     {
         if (string.IsNullOrEmpty(name))
+        {
             return name;
-        return char.ToLowerInvariant(name[0]) + name.Substring(1);
+        }
+        return char.ToLowerInvariant(name[0]) + name.AsSpan(1).ToString();
     }
 
     private static string ToKebab(string name)
     {
         if (string.IsNullOrEmpty(name))
+        {
             return name;
-        var sb = new StringBuilder(name.Length + 8);
-        foreach (var ch in name)
+        }
+        StringBuilder sb = new StringBuilder(name.Length + 8);
+        foreach (char ch in name)
         {
             if (char.IsWhiteSpace(ch))
             {
@@ -322,21 +331,21 @@ public sealed class DocumentationGenerator
 
     private static string FormatEnumSuffix(MemberInfoModel m)
     {
-        if (!m.IsEnum || m.EnumValues is null || m.EnumValues.Count == 0)
+    if (!m.IsEnum || m.EnumValues is null || m.EnumValues.Count == 0)
         {
             return string.Empty;
         }
 
         // Format values as: `A`, `B`, or `C`
-        var values = m.EnumValues;
-        if (values.Count == 1)
+    List<string> values = m.EnumValues;
+    if (values.Count == 1)
         {
             return $" (Can be `{values[0]}`)";
         }
 
-        var last = values[values.Count - 1];
-        var head = values.Take(values.Count - 1).Select(v => $"`{v}`");
-        var joinedHead = string.Join(", ", head);
+    string last = values[^1];
+    IEnumerable<string> head = values.Take(values.Count - 1).Select(v => $"`{v}`");
+    string joinedHead = string.Join(", ", head);
         return $" (Can be {joinedHead}, or `{last}`)";
     }
 
@@ -348,12 +357,12 @@ public sealed class DocumentationGenerator
     )
     {
         // Base line
-        var baseDesc = isOutput
+    string baseDesc = isOutput
             ? $"- `{ToCamel(m.Name)}` - {m.Description}{FormatEnumSuffix(m)}"
             : $"- `{ToCamel(m.Name)}` - {(m.IsRequired ? "(Required) " : "(Optional) ")}{m.Description}{FormatEnumSuffix(m)}";
 
         // Determine nested type by stripping nullable and generics/arrays and namespace qualifiers
-        var nestedTypeName = ExtractBaseTypeName(m.Type);
+    string nestedTypeName = ExtractBaseTypeName(m.Type);
         if (string.IsNullOrEmpty(nestedTypeName) || !typeLookup.ContainsKey(nestedTypeName))
         {
             sb.AppendLine(baseDesc);
@@ -361,34 +370,33 @@ public sealed class DocumentationGenerator
         }
 
         // We have a complex type; append a colon (without double punctuation) and then nested members
-        if (baseDesc.EndsWith(".", StringComparison.Ordinal))
+    if (baseDesc.EndsWith('.'))
         {
-            baseDesc = baseDesc.Substring(0, baseDesc.Length - 1) + ":";
+            baseDesc = string.Concat(baseDesc.AsSpan(0, baseDesc.Length - 1), ":");
         }
-        else if (!baseDesc.EndsWith(":", StringComparison.Ordinal))
+    else if (!baseDesc.EndsWith(':'))
         {
             baseDesc += ":";
         }
         sb.AppendLine(baseDesc);
 
-        var nested = typeLookup[nestedTypeName];
+        TypeInfoModel nested = typeLookup[nestedTypeName];
         // For arguments: include non-readonly; for outputs: include readonly
-        var nestedMembers = nested
+    List<MemberInfoModel> nestedMembers = nested
             .Members.Where(nm => isOutput ? nm.IsReadOnly : !nm.IsReadOnly)
             .OrderBy(nm => nm.Name, StringComparer.Ordinal)
             .ToList();
 
-        foreach (var nm in nestedMembers)
+    foreach (MemberInfoModel nm in nestedMembers)
         {
             if (isOutput)
             {
-                sb.AppendLine($"  - `{ToCamel(nm.Name)}` - {nm.Description}{FormatEnumSuffix(nm)}");
+                sb.AppendLine(CultureInfo.InvariantCulture, $"  - `{ToCamel(nm.Name)}` - {nm.Description}{FormatEnumSuffix(nm)}");
             }
             else
             {
-                sb.AppendLine(
-                    $"  - `{ToCamel(nm.Name)}` - {(nm.IsRequired ? "(Required) " : "(Optional) ")}{nm.Description}{FormatEnumSuffix(nm)}"
-                );
+                sb.AppendLine(CultureInfo.InvariantCulture,
+                    $"  - `{ToCamel(nm.Name)}` - {(nm.IsRequired ? "(Required) " : "(Optional) ")}{nm.Description}{FormatEnumSuffix(nm)}");
             }
         }
     }
@@ -400,28 +408,32 @@ public sealed class DocumentationGenerator
             return string.Empty;
         }
 
-        var t = type.Trim();
+        string t = type.Trim();
         // remove nullable marker
-        if (t.EndsWith("?", StringComparison.Ordinal))
-            t = t.Substring(0, t.Length - 1);
+    if (t.EndsWith('?'))
+        {
+            t = t[..^1];
+        }
         // arrays
         if (t.EndsWith("[]", StringComparison.Ordinal))
-            t = t.Substring(0, t.Length - 2);
+        {
+            t = t[..^2];
+        }
         // generics: take inner type of List<T> or similar
-        var lt = t.IndexOf('<');
+        int lt = t.IndexOf('<');
         if (lt >= 0)
         {
-            var gt = t.LastIndexOf('>');
+            int gt = t.LastIndexOf('>');
             if (gt > lt)
             {
                 t = t.Substring(lt + 1, gt - lt - 1);
             }
         }
         // strip namespace qualifiers
-        var lastDot = t.LastIndexOf('.');
+        int lastDot = t.LastIndexOf('.');
         if (lastDot >= 0)
         {
-            t = t.Substring(lastDot + 1);
+            t = t[(lastDot + 1)..];
         }
         return t;
     }

@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>13</LangVersion>
+  <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>Bicep.LocalDeploy</PackageId>
     <Title>Bicep Local Deploy - Attributes</Title>
     <Description>Attributes for annotating C# models for Bicep Local Deploy documentation.</Description>

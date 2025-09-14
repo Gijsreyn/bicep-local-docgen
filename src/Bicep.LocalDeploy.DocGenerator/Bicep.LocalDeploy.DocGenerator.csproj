@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>13</LangVersion>
+  <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Bicep.LocalDeploy.DocGenerator</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>bicep-local-docgen</ToolCommandName>

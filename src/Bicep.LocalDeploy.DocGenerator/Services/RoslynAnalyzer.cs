@@ -4,14 +4,19 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Bicep.LocalDeploy.DocGenerator.Services;
 
-/// <summary>
-/// Uses Roslyn to parse C# and extract resource types and members based on attributes.
-/// </summary>
-public static class RoslynAnalyzer
-{
-    public static async Task<AnalysisResult> AnalyzeAsync(GenerationOptions options)
+    /// <summary>
+    /// Roslyn-based analyzer that scans C# sources and builds the documentation model.
+    /// </summary>
+    public sealed class RoslynAnalyzer
     {
-        var result = new AnalysisResult();
+    /// <summary>
+    /// Analyze sources and return a structured model of types and attributes.
+    /// </summary>
+    /// <param name="options">Generation options controlling sources, patterns, and verbosity.</param>
+    /// <returns>The populated <see cref="AnalysisResult"/>.</returns>
+    public static async Task<AnalysisResult> AnalyzeAsync(GenerationOptions options)
+        {
+            var result = new AnalysisResult();
 
         if (options.Verbose)
         {
@@ -60,12 +65,12 @@ public static class RoslynAnalyzer
                 Console.WriteLine($"- Parsing {file.FullName}");
             }
             string text;
-            using (var reader = new StreamReader(file.FullName))
+                using (var reader = new StreamReader(file.FullName))
             {
-                text = await reader.ReadToEndAsync();
+                    text = await reader.ReadToEndAsync().ConfigureAwait(false);
             }
-            var tree = CSharpSyntaxTree.ParseText(text, path: file.FullName);
-            var root = await tree.GetRootAsync();
+                var tree = CSharpSyntaxTree.ParseText(text, path: file.FullName);
+                var root = await tree.GetRootAsync().ConfigureAwait(false);
 
             var ns =
                 root.DescendantNodes()

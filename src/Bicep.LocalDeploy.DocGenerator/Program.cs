@@ -5,110 +5,110 @@ using Bicep.LocalDeploy.DocGenerator.Services;
 
 namespace Bicep.LocalDeploy.DocGenerator
 {
-    internal static class Program
+internal static class Program
+{
+    private static readonly string[] DefaultPatterns = ["*.cs"]; // CA1861
+
+    public static async Task<int> Main(string[] args)
     {
-        public static async Task<int> Main(string[] args)
+        RootCommand root = new(
+            "Generate documentation files from Bicep models having the [ResourceType] attribute and additional custom attributes from Bicep.LocalDeploy project."
+        );
+
+        Command generateCmd = CreateGenerateCommand();
+        root.Add(generateCmd);
+
+        // TODO: 'check' command: wired but not implemented yet
+        Command checkCmd = CreateCheckCommand();
+        root.Add(checkCmd);
+
+        Parser parser = new CommandLineBuilder(root).UseDefaults().UseVersionOption().Build();
+
+        return await parser.InvokeAsync(args);
+    }
+
+    private static Command CreateGenerateCommand()
+    {
+        Command cmd = new("generate", "Generate documentation files from Bicep models.");
+
+        Option<DirectoryInfo> sourceOption = new(
+            ["--source", "-s"],
+            "The source folder storing Bicep models."
+        )
         {
-            var root = new RootCommand(
-                "Generate documentation files from Bicep models having the [ResourceType] attribute and additional custom attributes from Bicep.LocalDeploy project."
-            );
+            Arity = ArgumentArity.ExactlyOne,
+        };
 
-            var generateCmd = CreateGenerateCommand();
-            root.Add(generateCmd);
-
-            // TODO: 'check' command: wired but not implemented yet
-            var checkCmd = CreateCheckCommand();
-            root.Add(checkCmd);
-
-            var parser = new CommandLineBuilder(root).UseDefaults().UseVersionOption().Build();
-
-            return await parser.InvokeAsync(args);
-        }
-
-        private static Command CreateGenerateCommand()
+        Option<DirectoryInfo> outputOption = new(
+            ["--output", "-o"],
+            "The output directory to store generated docs."
+        )
         {
-            var cmd = new Command("generate", "Generate documentation files from Bicep models.");
+            Arity = ArgumentArity.ExactlyOne,
+        };
+        outputOption.SetDefaultValue(new DirectoryInfo("docs"));
 
-            var sourceOption = new Option<DirectoryInfo>(
-                ["--source", "-s"],
-                "The source folder storing Bicep models."
-            )
+        Option<string[]> patternOption = new(
+            ["--pattern", "-p"],
+            "Filters to select sources files e.g. *.cs"
+        )
+        {
+            Arity = ArgumentArity.ZeroOrMore,
+        };
+        patternOption.SetDefaultValue(DefaultPatterns);
+
+        Option<bool> verboseOption = new(["--verbose", "-v"], "Enable verbosity logging.");
+        Option<bool> forceOption = new(
+            ["--force", "-f"],
+            "Overwrite existing files if they already exist."
+        );
+
+        cmd.Add(sourceOption);
+        cmd.Add(outputOption);
+        cmd.Add(patternOption);
+        cmd.Add(verboseOption);
+        cmd.Add(forceOption);
+
+        cmd.SetHandler(
+            async (
+                DirectoryInfo source,
+                DirectoryInfo output,
+                string[] patterns,
+                bool verbose,
+                bool force
+            ) =>
             {
-                Arity = ArgumentArity.ExactlyOne,
-            };
-
-            var outputOption = new Option<DirectoryInfo>(
-                ["--output", "-o"],
-                "The output directory to store generated docs."
-            )
-            {
-                Arity = ArgumentArity.ExactlyOne,
-            };
-            outputOption.SetDefaultValue(new DirectoryInfo("docs"));
-
-            var patternOption = new Option<string[]>(
-                ["--pattern", "-p"],
-                "Filters to select sources files e.g. *.cs"
-            )
-            {
-                Arity = ArgumentArity.ZeroOrMore,
-            };
-            patternOption.SetDefaultValue(new[] { "*.cs" });
-
-            var verboseOption = new Option<bool>(["--verbose", "-v"], "Enable verbosity logging.");
-            var forceOption = new Option<bool>(
-                ["--force", "-f"],
-                "Overwrite existing files if they already exist."
-            );
-
-            cmd.Add(sourceOption);
-            cmd.Add(outputOption);
-            cmd.Add(patternOption);
-            cmd.Add(verboseOption);
-            cmd.Add(forceOption);
-
-            cmd.SetHandler(
-                async (
-                    DirectoryInfo source,
-                    DirectoryInfo output,
-                    string[] patterns,
-                    bool verbose,
-                    bool force
-                ) =>
+                GenerationOptions options = new()
                 {
-                    GenerationOptions options = new()
-                    {
-                        SourceDirectories = [source],
-                        FilePatterns = patterns,
-                        OutputDirectory = output,
-                        Verbose = verbose,
-                        Force = force,
-                    };
+                    SourceDirectories = [source],
+                    FilePatterns = patterns,
+                    OutputDirectory = output,
+                    Verbose = verbose,
+                    Force = force,
+                };
 
-                    DocumentationGenerator generator = new();
-                    await generator.GenerateAsync(options);
-                },
-                sourceOption,
-                outputOption,
-                patternOption,
-                verboseOption,
-                forceOption
-            );
+                await DocumentationGenerator.GenerateAsync(options);
+            },
+            sourceOption,
+            outputOption,
+            patternOption,
+            verboseOption,
+            forceOption
+        );
 
-            return cmd;
-        }
+        return cmd;
+    }
 
-        private static Command CreateCheckCommand()
+    private static Command CreateCheckCommand()
+    {
+        Command cmd = new("check", "Check if models have available attributes to leverage in documentation.");
+
+        // For now, this is a stub implementation.
+        cmd.SetHandler(() =>
         {
-            var cmd = new Command("check", "Check if models have available attributes to leverage in documentation.");
+            Console.WriteLine("The 'check' command is not implemented yet. Please use 'generate' for now.");
+        });
 
-            // For now, this is a stub implementation.
-            cmd.SetHandler(() =>
-            {
-                Console.WriteLine("The 'check' command is not implemented yet. Please use 'generate' for now.");
-            });
-
-            return cmd;
-        }
+        return cmd;
     }
 }
