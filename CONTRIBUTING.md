@@ -1,7 +1,7 @@
 # Contributing
 
 Thanks for your interest in contributing to `bicep-local-docgen`! Here are a few general
-guidelines on contributing andreporting bugs that we ask you to review. Following these
+guidelines on contributing and reporting bugs that we ask you to review. Following these
 guidelines helps to communicate that you respect the time of the contributors managing
 and developing this open source project.
 
