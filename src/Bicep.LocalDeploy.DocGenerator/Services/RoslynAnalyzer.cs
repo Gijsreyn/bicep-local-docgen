@@ -4,19 +4,19 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Bicep.LocalDeploy.DocGenerator.Services;
 
-    /// <summary>
-    /// Roslyn-based analyzer that scans C# sources and builds the documentation model.
-    /// </summary>
-    public sealed class RoslynAnalyzer
-    {
+/// <summary>
+/// Roslyn-based analyzer that scans C# sources and builds the documentation model.
+/// </summary>
+public sealed class RoslynAnalyzer
+{
     /// <summary>
     /// Analyze sources and return a structured model of types and attributes.
     /// </summary>
     /// <param name="options">Generation options controlling sources, patterns, and verbosity.</param>
     /// <returns>The populated <see cref="AnalysisResult"/>.</returns>
     public static async Task<AnalysisResult> AnalyzeAsync(GenerationOptions options)
-        {
-            var result = new AnalysisResult();
+    {
+        var result = new AnalysisResult();
 
         if (options.Verbose)
         {
@@ -26,7 +26,7 @@ namespace Bicep.LocalDeploy.DocGenerator.Services;
             Console.WriteLine($"Patterns: {pats}");
         }
 
-        var files = new List<FileInfo>();
+        List<FileInfo> files = new List<FileInfo>();
         foreach (var dir in options.SourceDirectories)
         {
             if (!dir.Exists)
@@ -65,12 +65,12 @@ namespace Bicep.LocalDeploy.DocGenerator.Services;
                 Console.WriteLine($"- Parsing {file.FullName}");
             }
             string text;
-                using (var reader = new StreamReader(file.FullName))
+            using (var reader = new StreamReader(file.FullName))
             {
-                    text = await reader.ReadToEndAsync().ConfigureAwait(false);
+                text = await reader.ReadToEndAsync().ConfigureAwait(false);
             }
-                var tree = CSharpSyntaxTree.ParseText(text, path: file.FullName);
-                var root = await tree.GetRootAsync().ConfigureAwait(false);
+            var tree = CSharpSyntaxTree.ParseText(text, path: file.FullName);
+            var root = await tree.GetRootAsync().ConfigureAwait(false);
 
             var ns =
                 root.DescendantNodes()
@@ -118,14 +118,18 @@ namespace Bicep.LocalDeploy.DocGenerator.Services;
                 foreach (var attr in td.AttributeLists.SelectMany(a => a.Attributes))
                 {
                     var attrName = attr.Name.ToString();
-                    if (attrName.Contains("BicepFrontMatter", StringComparison.Ordinal)
-                        && attr.ArgumentList?.Arguments.Count >= 2)
+                    if (
+                        attrName.Contains("BicepFrontMatter", StringComparison.Ordinal)
+                        && attr.ArgumentList?.Arguments.Count >= 2
+                    )
                     {
                         var args = attr.ArgumentList.Arguments;
                         // Form 1: (key, value)
-                        if (args.Count == 2
+                        if (
+                            args.Count == 2
                             && args[0].Expression is LiteralExpressionSyntax k1
-                            && args[1].Expression is LiteralExpressionSyntax v1)
+                            && args[1].Expression is LiteralExpressionSyntax v1
+                        )
                         {
                             var key = k1.Token.ValueText;
                             var value = v1.Token.ValueText;
@@ -145,11 +149,13 @@ namespace Bicep.LocalDeploy.DocGenerator.Services;
                             }
                         }
                         // Form 2: (blockIndex:int, key, value)
-                        else if (args.Count >= 3
+                        else if (
+                            args.Count >= 3
                             && args[0].Expression is LiteralExpressionSyntax b
                             && int.TryParse(b.Token.ValueText, out var blockIndex)
                             && args[1].Expression is LiteralExpressionSyntax k2
-                            && args[2].Expression is LiteralExpressionSyntax v2)
+                            && args[2].Expression is LiteralExpressionSyntax v2
+                        )
                         {
                             if (blockIndex < 1)
                             {
@@ -168,17 +174,23 @@ namespace Bicep.LocalDeploy.DocGenerator.Services;
                                 block[key] = value;
                                 if (options.Verbose)
                                 {
-                                    Console.WriteLine($"  FrontMatter[{blockIndex}]: {key} = '{value}'");
+                                    Console.WriteLine(
+                                        $"  FrontMatter[{blockIndex}]: {key} = '{value}'"
+                                    );
                                 }
                             }
                         }
                     }
-                    else if (attrName.Contains("BicepDocHeading", StringComparison.Ordinal)
-                             && attr.ArgumentList?.Arguments.Count >= 2)
+                    else if (
+                        attrName.Contains("BicepDocHeading", StringComparison.Ordinal)
+                        && attr.ArgumentList?.Arguments.Count >= 2
+                    )
                     {
                         var args = attr.ArgumentList.Arguments;
-                        if (args[0].Expression is LiteralExpressionSyntax ht
-                            && args[1].Expression is LiteralExpressionSyntax hd)
+                        if (
+                            args[0].Expression is LiteralExpressionSyntax ht
+                            && args[1].Expression is LiteralExpressionSyntax hd
+                        )
                         {
                             type.HeadingTitle = ht.Token.ValueText;
                             type.HeadingDescription = hd.Token.ValueText;
@@ -299,9 +311,18 @@ namespace Bicep.LocalDeploy.DocGenerator.Services;
                             var flagsText = typePropAttr
                                 .ArgumentList.Arguments[1]
                                 .Expression.ToString();
-                            mi.IsRequired = flagsText.Contains("Required", StringComparison.Ordinal);
-                            mi.IsReadOnly = flagsText.Contains("ReadOnly", StringComparison.Ordinal);
-                            mi.IsIdentifier = flagsText.Contains("Identifier", StringComparison.Ordinal);
+                            mi.IsRequired = flagsText.Contains(
+                                "Required",
+                                StringComparison.Ordinal
+                            );
+                            mi.IsReadOnly = flagsText.Contains(
+                                "ReadOnly",
+                                StringComparison.Ordinal
+                            );
+                            mi.IsIdentifier = flagsText.Contains(
+                                "Identifier",
+                                StringComparison.Ordinal
+                            );
                         }
                         if (options.Verbose)
                         {

@@ -7,7 +7,11 @@ namespace Bicep.LocalDeploy
     /// This attribute controls the first heading of the generated markdown and the paragraph under it.
     /// Use <see cref="BicepFrontMatterAttribute"/> exclusively for YAML front matter data.
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(
+        AttributeTargets.Class | AttributeTargets.Struct,
+        AllowMultiple = false,
+        Inherited = true
+    )]
     public sealed class BicepDocHeadingAttribute(string title, string description) : Attribute
     {
         /// <summary>The H1 title.</summary>

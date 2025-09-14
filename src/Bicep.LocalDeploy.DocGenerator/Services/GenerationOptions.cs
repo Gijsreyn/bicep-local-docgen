@@ -6,7 +6,7 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
     public sealed class GenerationOptions
     {
         /// <summary>The source directories containing C# model files to analyze.</summary>
-    public DirectoryInfo[] SourceDirectories { get; init; } = [];
+        public DirectoryInfo[] SourceDirectories { get; init; } = [];
 
         /// <summary>File name patterns to include (e.g., "*.cs").</summary>
         public string[] FilePatterns { get; init; } = ["*.cs"];

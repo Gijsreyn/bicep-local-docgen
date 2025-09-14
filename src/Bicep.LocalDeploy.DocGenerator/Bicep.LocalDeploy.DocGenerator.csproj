@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>13</LangVersion>
-  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Bicep.LocalDeploy.DocGenerator</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>bicep-local-docgen</ToolCommandName>
@@ -21,11 +21,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Bicep.LocalDeploy\Bicep.LocalDeploy.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\..\logo.png" Pack="true" PackagePath="">
       <Link>logo.png</Link>
     </None>
   </ItemGroup>
-
 </Project>

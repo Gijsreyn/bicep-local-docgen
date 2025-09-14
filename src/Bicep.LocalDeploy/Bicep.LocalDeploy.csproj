@@ -5,9 +5,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>13</LangVersion>
-  <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>Bicep.LocalDeploy</PackageId>
     <Title>Bicep Local Deploy - Attributes</Title>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Attributes for annotating C# models for Bicep Local Deploy documentation.</Description>
     <Authors>Gijsreyn</Authors>
     <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
@@ -15,7 +15,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\..\logo.png" Pack="true" PackagePath="">
       <Link>logo.png</Link>

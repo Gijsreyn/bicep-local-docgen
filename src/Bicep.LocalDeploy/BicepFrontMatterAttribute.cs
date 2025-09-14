@@ -3,7 +3,11 @@ namespace Bicep.LocalDeploy
     /// <summary>
     /// Declares front matter metadata for generated documentation. Use keys like "title", "description", or custom values.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true, Inherited = true)]
+    [AttributeUsage(
+        AttributeTargets.Class | AttributeTargets.Struct,
+        AllowMultiple = true,
+        Inherited = true
+    )]
     public sealed class BicepFrontMatterAttribute : Attribute
     {
         /// <param name="key">Front matter key, e.g. "title", "description", "category".</param>
