@@ -319,7 +319,7 @@ public class FrontMatter
 """;
 
         string md = await GenerateMarkdownAsync(cs, "FM");
-    // Verify order using raw content: block1 (another, title) appears before block2 (alpha, zeta)
+        // Verify order using raw content: block1 (another, title) appears before block2 (alpha, zeta)
         int idxBlock1Another = md.IndexOf("another: \"block1-another\"", StringComparison.Ordinal);
         int idxBlock1Title = md.IndexOf("title: \"Block1Title\"", StringComparison.Ordinal);
         int idxBlock2Alpha = md.IndexOf("alpha: \"block2-alpha\"", StringComparison.Ordinal);
