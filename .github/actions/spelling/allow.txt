@@ -36,3 +36,7 @@ IEnumerable
 inlines
 NUnit
 versioning
+biceplocalgenignore
+IDisposable
+ILogger
+TState
