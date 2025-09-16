@@ -119,20 +119,20 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                 "Specify the log level - Critical, Debug, Error, Information (default), None, Trace, Warning"
             );
 
-            Option<bool> includeCustomOption = new(
-                ["--include-custom"],
-                "Include validation for BicepDocCustom attributes"
+            Option<bool> includeExtendedOption = new(
+                ["--include-extended"],
+                "Include validation for BicepFrontMatter and BicepDocCustom attributes"
             );
 
             Option<bool> verboseOption = new(["--verbose", "-v"], "Enable verbose logging.");
 
             cmd.Add(ignorePathOption);
             cmd.Add(logLevelOption);
-            cmd.Add(includeCustomOption);
+            cmd.Add(includeExtendedOption);
             cmd.Add(verboseOption);
 
             cmd.SetHandler(
-                async (directoryOrFile, ignorePath, logLevel, includeCustom, verbose) =>
+                async (directoryOrFile, ignorePath, logLevel, includeExtended, verbose) =>
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
                     ConsoleLogger logger = new((LogLevel)logLevel);
@@ -147,7 +147,7 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                         FilePatterns = [.. DefaultPatterns],
                         IgnorePath = ignorePath,
                         LogLevel = (LogLevel)logLevel,
-                        IncludeCustom = includeCustom,
+                        IncludeExtended = includeExtended,
                         Verbose = verbose,
                     };
 
@@ -166,7 +166,7 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                 directoryOrFileArgument,
                 ignorePathOption,
                 logLevelOption,
-                includeCustomOption,
+                includeExtendedOption,
                 verboseOption
             );
 

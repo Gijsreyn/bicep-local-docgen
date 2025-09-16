@@ -19,8 +19,8 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
         /// <summary>Log level for output.</summary>
         public LogLevel LogLevel { get; set; } = LogLevel.Information;
 
-        /// <summary>Whether to include BicepDocCustom validation.</summary>
-        public bool IncludeCustom { get; set; }
+        /// <summary>Whether to include extended validation (BicepFrontMatter and BicepDocCustom).</summary>
+        public bool IncludeExtended { get; set; }
 
         /// <summary>Enable verbose output.</summary>
         public bool Verbose { get; set; }
@@ -111,7 +111,10 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                 }
 
                 CheckResult result = await ValidateFileAsync(file, options);
-                results.Add(result);
+                if (result.HasErrors)
+                {
+                    results.Add(result);
+                }
             }
 
             return results;
@@ -190,8 +193,8 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                 );
             }
 
-            // Check for front matter
-            if (type.FrontMatterBlocks.Count == 0)
+            // Check for front matter only if extended validation is enabled
+            if (options.IncludeExtended && type.FrontMatterBlocks.Count == 0)
             {
                 result.Errors.Add(
                     new ValidationError
@@ -204,8 +207,8 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                 );
             }
 
-            // Check for custom sections if requested
-            if (options.IncludeCustom && type.CustomSections.Count == 0)
+            // Check for custom sections only if extended validation is enabled
+            if (options.IncludeExtended && type.CustomSections.Count == 0)
             {
                 result.Errors.Add(
                     new ValidationError
