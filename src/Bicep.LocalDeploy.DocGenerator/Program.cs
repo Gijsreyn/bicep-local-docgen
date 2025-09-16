@@ -1,7 +1,9 @@
 using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using System.Diagnostics;
 using Bicep.LocalDeploy.DocGenerator.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Bicep.LocalDeploy.DocGenerator
 {
@@ -97,18 +99,98 @@ namespace Bicep.LocalDeploy.DocGenerator
         {
             Command cmd = new(
                 "check",
-                "Check if models have available attributes to leverage in documentation."
+                "Check if models have the required documentation attributes."
             );
 
-            // For now, this is a stub implementation.
-            cmd.SetHandler(() =>
+            Option<DirectoryInfo[]> sourceOption = new(
+                ["--source", "-s"],
+                "The source folder(s) storing Bicep models."
+            )
             {
-                Console.WriteLine(
-                    "The 'check' command is not implemented yet. Please use 'generate' for now."
-                );
-            });
+                Arity = ArgumentArity.OneOrMore,
+            };
+
+            Option<string[]> patternOption = new(
+                ["--pattern", "-p"],
+                "Filters to select source files e.g. *.cs"
+            )
+            {
+                Arity = ArgumentArity.ZeroOrMore,
+            };
+            patternOption.SetDefaultValue(DefaultPatterns);
+
+            Option<string> ignorePathOption = new(
+                ["--ignore-path"],
+                "Path to the bicep-local-docgen ignore file (.biceplocalgenignore)"
+            );
+
+            Option<BicepLogLevel> logLevelOption = new(
+                ["--log-level"],
+                () => BicepLogLevel.Information,
+                "Specify the log level - Critical, Debug, Error, Information (default), None, Trace, Warning"
+            );
+
+            Option<bool> includeCustomOption = new(
+                ["--include-custom"],
+                "Include validation for BicepDocCustom attributes"
+            );
+
+            Option<bool> verboseOption = new(["--verbose", "-v"], "Enable verbose logging.");
+
+            cmd.Add(sourceOption);
+            cmd.Add(patternOption);
+            cmd.Add(ignorePathOption);
+            cmd.Add(logLevelOption);
+            cmd.Add(includeCustomOption);
+            cmd.Add(verboseOption);
+
+            cmd.SetHandler(
+                async (sources, patterns, ignorePath, logLevel, includeCustom, verbose) =>
+                {
+                    Stopwatch stopwatch = Stopwatch.StartNew();
+                    ConsoleLogger logger = new((LogLevel)logLevel);
+                    CheckValidator validator = new(logger);
+                    CheckFormatter formatter = new(logger);
+
+                    CheckOptions options = new()
+                    {
+                        SourceDirectories = [.. sources],
+                        FilePatterns = [.. patterns],
+                        IgnorePath = ignorePath,
+                        LogLevel = (LogLevel)logLevel,
+                        IncludeCustom = includeCustom,
+                        Verbose = verbose,
+                    };
+
+                    try
+                    {
+                        List<CheckResult> results = await validator.ValidateAsync(options);
+                        stopwatch.Stop();
+                        Environment.ExitCode = formatter.FormatResults(results, stopwatch);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogValidationError(logger, ex);
+                        Environment.ExitCode = 1;
+                    }
+                },
+                sourceOption,
+                patternOption,
+                ignorePathOption,
+                logLevelOption,
+                includeCustomOption,
+                verboseOption
+            );
 
             return cmd;
         }
+
+        // LoggerMessage delegate for performance
+        private static readonly Action<ILogger, Exception?> LogValidationError =
+            LoggerMessage.Define(
+                LogLevel.Error,
+                new EventId(6, nameof(LogValidationError)),
+                "An error occurred during validation"
+            );
     }
 }
