@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Bicep.LocalDeploy.DocGenerator.Services
 {
     /// <summary>
@@ -19,5 +21,11 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
 
         /// <summary>When true, overwrites existing files in the output directory.</summary>
         public bool Force { get; init; }
+
+        /// <summary>Path to the bicep-local-docgen ignore file (.biceplocalgenignore).</summary>
+        public string? IgnorePath { get; init; }
+
+        /// <summary>The logging level for diagnostic output.</summary>
+        public LogLevel LogLevel { get; init; } = LogLevel.Information;
     }
 }

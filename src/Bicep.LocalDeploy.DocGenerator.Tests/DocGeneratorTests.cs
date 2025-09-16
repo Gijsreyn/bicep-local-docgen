@@ -1,5 +1,7 @@
 using System.Text;
 using Bicep.LocalDeploy.DocGenerator.Services;
+using Markdig.Extensions.Yaml;
+using Markdig.Syntax;
 using NUnit.Framework;
 
 namespace Bicep.LocalDeploy.DocGenerator.Tests;
@@ -11,14 +13,14 @@ public class DocGeneratorTests
 
     private static async Task<string> GenerateMarkdownAsync(string csSource, string h1Contains)
     {
-        var outDir = Directory.CreateTempSubdirectory("docgen-out-");
-        var srcDir = Directory.CreateTempSubdirectory("docgen-src-");
+        DirectoryInfo outDir = Directory.CreateTempSubdirectory("docgen-out-");
+        DirectoryInfo srcDir = Directory.CreateTempSubdirectory("docgen-src-");
         try
         {
-            var srcFile = Path.Combine(srcDir.FullName, "Model.cs");
+            string srcFile = Path.Combine(srcDir.FullName, "Model.cs");
             await File.WriteAllTextAsync(srcFile, csSource, Encoding.UTF8);
 
-            var options = new GenerationOptions
+            GenerationOptions options = new()
             {
                 SourceDirectories = [new DirectoryInfo(srcDir.FullName)],
                 FilePatterns = ["*.cs"],
@@ -29,11 +31,11 @@ public class DocGeneratorTests
 
             await DocumentationGenerator.GenerateAsync(options);
 
-            var files = Directory.GetFiles(outDir.FullName, "*.md");
+            string[] files = Directory.GetFiles(outDir.FullName, "*.md");
             Assert.That(files, Is.Not.Empty, "No markdown files were generated");
-            foreach (var f in files)
+            foreach (string f in files)
             {
-                var content = ReadFile(f);
+                string content = ReadFile(f);
                 if (content.Contains("# " + h1Contains, StringComparison.Ordinal))
                 {
                     return content;
@@ -63,7 +65,7 @@ public class DocGeneratorTests
     [Test]
     public async Task DirectoryModelGeneratesMarkdownWithExpectedSections()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -111,13 +113,13 @@ public class WidgetBase
 """;
 
         string md = await GenerateMarkdownAsync(cs, "Widget");
-        var doc = MarkdownParsingExtensions.ParseMarkdown(md);
-        var yaml = doc.FrontMatters().FirstOrDefault();
+        MarkdownDocument doc = MarkdownParsingExtensions.ParseMarkdown(md);
+        YamlFrontMatterBlock? yaml = doc.FrontMatters().FirstOrDefault();
         Assert.That(yaml, Is.Not.Null, "YAML front matter missing");
-        var headings = doc.Headings().ToList();
+        List<(string Level, string Text)> headings = doc.Headings().ToList();
         Assert.That(headings.Count(h => h.Level == "#"), Is.EqualTo(1), "Exactly one H1 expected");
         Assert.That(md, Does.Contain("# Widget"), "H1 title missing or incorrect");
-        var firstPara = doc.GetFirstParagraph();
+        string firstPara = doc.GetFirstParagraph();
         Assert.That(firstPara, Is.Not.Empty, "Description paragraph under H1 is missing");
         Assert.That(md, Does.Contain("## Example usage"), "Example usage section missing");
         Assert.That(md, Does.Contain("```bicep"), "Bicep code fence missing");
@@ -146,7 +148,7 @@ public class WidgetBase
     [Test]
     public async Task SingleRequiredPropertyGeneratesOnlyBasicExampleNoAdvanced()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -173,7 +175,7 @@ public class SingleReq
     [Test]
     public async Task NoOutputsOmitsAttributeReferenceSection()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -200,7 +202,7 @@ public class NoOutputs
     [Test]
     public async Task HeadingFallsBackToFrontMatterTitleWhenNoHeadingAttribute()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -222,7 +224,7 @@ public class FrontTitle
     [Test]
     public async Task HeadingFallsBackToResourceTypeNameWhenNoHeadingAndNoFrontMatter()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -243,7 +245,7 @@ public class Fallback
     [Test]
     public async Task EnumSingleValueShowsSingularSuffix()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -270,7 +272,7 @@ public class EnumOne
     [Test]
     public async Task NestedTypeExpandsNestedMembers()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -299,7 +301,7 @@ public class Parent
     [Test]
     public async Task MultiBlockFrontMatterWritesTwoBlocksInOrderAndSortsKeys()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -333,7 +335,7 @@ public class FrontMatter
     [Test]
     public async Task HeadingAttributeOverridesFrontMatterTitle()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
@@ -357,7 +359,7 @@ public class HP
     [Test]
     public async Task EnumMultiValuesFormatsGrammarWithCommasAndOr()
     {
-        var cs = """
+        string cs = """
 using Bicep.LocalDeploy;
 using Bicep.Local.Extension.Types.Attributes;
 
