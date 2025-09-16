@@ -18,6 +18,13 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
         {
             AnalysisResult result = new();
 
+            // Load ignore file
+            string baseDirectory =
+                options.SourceDirectories.Length > 0
+                    ? options.SourceDirectories[0].FullName
+                    : Directory.GetCurrentDirectory();
+            IgnoreFile ignoreFile = await IgnoreFile.CreateAsync(baseDirectory, options.IgnorePath);
+
             if (options.Verbose)
             {
                 string srcs = string.Join(", ", options.SourceDirectories.Select(d => d.FullName));
@@ -55,7 +62,8 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
             [
                 .. files
                     .GroupBy(f => f.FullName, StringComparer.OrdinalIgnoreCase)
-                    .Select(g => g.First()),
+                    .Select(g => g.First())
+                    .Where(f => !ignoreFile.IsIgnored(f.FullName)),
             ];
 
             if (options.Verbose)
@@ -422,10 +430,9 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
             }
 
             // merge inherited members (single-level is sufficient for our case)
-            Dictionary<string, TypeInfoModel> lookup = result.Types.ToDictionary(
-                t => t.Name,
-                t => t
-            );
+            Dictionary<string, TypeInfoModel> lookup = result
+                .Types.GroupBy(t => t.Name)
+                .ToDictionary(g => g.Key, g => g.First());
             foreach (TypeInfoModel t in result.Types)
             {
                 foreach (string baseName in t.BaseTypes)
