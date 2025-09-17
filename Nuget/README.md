@@ -50,7 +50,7 @@ your models. Add the `Bicep.LocalDeploy` package to your project to use them.
 To add the library to your project, simply run the following command:
 
 ```bash
-dotnet add package Bicep.LocalDeploy --version <versionNumber>
+dotnet add package Bicep.LocalDeploy
 ```
 
 You can annotate your models with these attributes:
