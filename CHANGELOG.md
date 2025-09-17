@@ -28,7 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
-- **Ignore file Support**: Full support for `.biceplocalgenignore` files with glob patterns
+- **Ignore file Support**: Full support for `.biceplocalgenignore` files with glob
+  patterns
   - Single filename patterns (e.g., `Widget.cs`)
   - Directory patterns (e.g., `Models/**`)
   - Wildcard patterns (e.g., `Generated/*.cs`)
