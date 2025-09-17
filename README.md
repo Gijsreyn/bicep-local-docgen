@@ -1,4 +1,3 @@
-
 <!-- markdownlint-disable MD041 -->
 ![Bicep.LocalDeploy.DocGenerator](./banner.svg)
 
@@ -41,6 +40,8 @@ The CLI's default output is the `docs` directory. Use the `--output`
 or `--pattern` options to customize the behavior of the CLI. If you
 want to see verbose message, add the `--verbose` option to log messages
 to the console.
+
+For the full documentation, check it out on [GitHub][03].
 
 ## Using attributes for documentation
 
@@ -156,3 +157,4 @@ for a jump start.
 [00]: https://www.nuget.org/packages/Bicep.LocalDeploy
 [01]: https://www.nuget.org/packages/bicep-local-docgen
 [02]: CONTRIBUTING.md
+[03]: https://github.com/Gijsreyn/bicep-local-docgen/blob/main/docs/README.md

@@ -93,6 +93,7 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                 catch (ArgumentException)
                 {
                     // Skip invalid patterns
+                    Console.WriteLine($"DEBUG: Skipped invalid pattern '{pattern}'");
                 }
             }
 
@@ -101,16 +102,34 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
 
         private static string ConvertGlobToRegex(string glob)
         {
-            string regex =
-                "^"
-                + Regex
+            // Handle simple filenames (no path separators) - they should match anywhere in the path
+            if (!glob.Contains('/') && !glob.Contains('\\'))
+            {
+                string escapedFilename = Regex
                     .Escape(glob)
-                    .Replace(@"\*\*", ".*") // ** matches any number of directories
                     .Replace(@"\*", "[^/]*") // * matches anything except directory separator
-                    .Replace(@"\?", ".") // ? matches any single character
-                + "$";
+                    .Replace(@"\?", "."); // ? matches any single character
 
-            return regex;
+                // Match filename at any level: either at root or after any directory separator
+                return $@"(^|.*/){escapedFilename}$";
+            }
+
+            // Handle paths with directory separators
+            string escapedGlob = Regex.Escape(glob)
+                .Replace(@"\*\*", ".*") // ** matches any number of directories
+                .Replace(@"\*", "[^/]*") // * matches anything except directory separator
+                .Replace(@"\?", "."); // ? matches any single character
+
+            // For directory patterns (like "Models/**"), allow matching anywhere in the path
+            // This handles both relative paths and absolute paths
+            if (glob.Contains('/'))
+            {
+                // Match pattern anywhere in the path (for absolute paths) or at the start (for relative paths)
+                return $@"(^{escapedGlob}$|.*/{escapedGlob}$)";
+            }
+
+            // For simple patterns without directory separators
+            return $"^{escapedGlob}$";
         }
     }
 }
