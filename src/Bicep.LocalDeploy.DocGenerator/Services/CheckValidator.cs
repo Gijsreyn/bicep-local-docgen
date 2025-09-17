@@ -72,8 +72,10 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
         public async Task<List<CheckResult>> ValidateAsync(CheckOptions options)
         {
             List<CheckResult> results = [];
+            // Load ignore file from current directory, not source directory
+            string ignoreBaseDirectory = Directory.GetCurrentDirectory();
             IgnoreFile ignoreFile = await IgnoreFile.CreateAsync(
-                options.SourceDirectories.First().FullName,
+                ignoreBaseDirectory,
                 options.IgnorePath
             );
 

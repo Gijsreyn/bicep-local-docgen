@@ -1,5 +1,6 @@
-
 <!-- markdownlint-disable MD041 -->
+![Bicep.LocalDeploy.DocGenerator](./banner.svg)
+
 The Bicep.LocalDeploy.DocGenerator project is a documentation tool to generate
 Markdown files based on .NET Bicep models. It assists by reading the attributes
 from the model you have defined for your Bicep `local-deploy` and generating
@@ -39,6 +40,8 @@ The CLI's default output is the `docs` directory. Use the `--output`
 or `--pattern` options to customize the behavior of the CLI. If you
 want to see verbose message, add the `--verbose` option to log messages
 to the console.
+
+For the full documentation, check it out on [GitHub][03].
 
 ## Using attributes for documentation
 
@@ -148,3 +151,4 @@ This is a custom section.
 <!-- Link reference definitions -->
 [00]: https://www.nuget.org/packages/Bicep.LocalDeploy
 [01]: https://www.nuget.org/packages/bicep-local-docgen
+[03]: https://github.com/Gijsreyn/bicep-local-docgen/blob/main/docs/README.md
