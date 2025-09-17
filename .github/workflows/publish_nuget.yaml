@@ -35,11 +35,11 @@ jobs:
           PACKAGE_NAME: Bicep.LocalDeploy
           PROJECT_FILE_PATH: src/Bicep.LocalDeploy/Bicep.LocalDeploy.csproj
           VERSION_FILE_PATH: Nuget/Build.Library.props
-          TAG_COMMIT: false
+          TAG_COMMIT: true
       - name: Publish Bicep.LocalDeploy.DocGenerator dotnet tool on version change
         uses: alirezanet/publish-nuget@v3.1.0
         with:
           PACKAGE_NAME: Bicep.LocalDeploy.DocGenerator
           PROJECT_FILE_PATH: src/Bicep.LocalDeploy.DocGenerator/Bicep.LocalDeploy.DocGenerator.csproj
           VERSION_FILE_PATH: Nuget/Build.DocGenerator.props
-          TAG_COMMIT: false # TODO: change to true after first release
+          TAG_COMMIT: true
