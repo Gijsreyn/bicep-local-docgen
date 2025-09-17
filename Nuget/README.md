@@ -86,7 +86,7 @@ public class MyOwnResourceIdentifiers
 
 When you run the `bicep-local-docgen` tool, the produces output will be:
 
-```markdown
+````markdown
 <!-- myresource.md -->
 # MyOwnResource
 
@@ -98,11 +98,11 @@ Manages MyOwnResource resources.
 
 Creating a basic MyOwnResource resource:
 
-    ```bicep
-    resource myOwnResource 'MyOwnResource' = {
-    }
-    ```
+```bicep
+resource myOwnResource 'MyOwnResource' = {
+}
 ```
+````
 
 If you add annotations in the following way:
 
@@ -121,7 +121,7 @@ Resource: 'my-resource'
 
 The produces output is the following Markdown:
 
-```markdown
+````markdown
 <!-- myresource.md -->
 ---
 category: "resource"
@@ -137,16 +137,16 @@ Example resource used to demonstrate documentation generation.
 
 Minimal example creating the resource.
 
-    ```bicep
-    resource my 'MyOwnResource' = {
-    Resource: 'my-resource'
-    }
-    ```
+```bicep
+resource my 'MyOwnResource' = {
+Resource: 'my-resource'
+}
+```
 
 ## Custom Section
 
 This is a custom section.
-```
+````
 
 <!-- Link reference definitions -->
 [00]: https://www.nuget.org/packages/Bicep.LocalDeploy
