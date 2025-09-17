@@ -40,3 +40,7 @@ biceplocalgenignore
 IDisposable
 ILogger
 TState
+customignore
+IAttribute
+IMarkdown
+wildcards

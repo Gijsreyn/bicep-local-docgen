@@ -115,7 +115,8 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
             }
 
             // Handle paths with directory separators
-            string escapedGlob = Regex.Escape(glob)
+            string escapedGlob = Regex
+                .Escape(glob)
                 .Replace(@"\*\*", ".*") // ** matches any number of directories
                 .Replace(@"\*", "[^/]*") // * matches anything except directory separator
                 .Replace(@"\?", "."); // ? matches any single character

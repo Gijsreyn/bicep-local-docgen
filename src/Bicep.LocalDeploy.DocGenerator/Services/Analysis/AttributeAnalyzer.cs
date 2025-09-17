@@ -21,8 +21,9 @@ namespace Bicep.LocalDeploy.DocGenerator.Services.Analysis
                     a.Name.ToString().Contains("ResourceType", StringComparison.Ordinal)
                 );
 
-            return resourceTypeAttr?.ArgumentList?.Arguments.FirstOrDefault()?.Expression
-                is LiteralExpressionSyntax lit
+            return
+                resourceTypeAttr?.ArgumentList?.Arguments.FirstOrDefault()?.Expression
+                    is LiteralExpressionSyntax lit
                 ? lit.Token.ValueText
                 : (string?)null;
         }

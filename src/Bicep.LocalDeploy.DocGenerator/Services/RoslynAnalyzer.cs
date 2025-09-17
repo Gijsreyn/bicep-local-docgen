@@ -21,7 +21,10 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
 
             // Load ignore file from current directory, not source directory
             string ignoreBaseDirectory = Directory.GetCurrentDirectory();
-            IgnoreFile ignoreFile = await IgnoreFile.CreateAsync(ignoreBaseDirectory, options.IgnorePath);
+            IgnoreFile ignoreFile = await IgnoreFile.CreateAsync(
+                ignoreBaseDirectory,
+                options.IgnorePath
+            );
 
             if (options.Verbose)
             {
@@ -100,7 +103,9 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
 
                 foreach (TypeDeclarationSyntax td in typeDecls)
                 {
-                    string ns = td.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>()?.Name.ToString() ?? string.Empty;
+                    string ns =
+                        td.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>()?.Name.ToString()
+                        ?? string.Empty;
 
                     TypeInfoModel type = new()
                     {
@@ -108,7 +113,7 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
                         Namespace = ns,
                         SourceFile = file.FullName,
                         // Extract ResourceType attribute
-                        ResourceTypeName = AttributeAnalyzer.ExtractResourceTypeName(td)
+                        ResourceTypeName = AttributeAnalyzer.ExtractResourceTypeName(td),
                     };
                     if (type.ResourceTypeName is not null && options.Verbose)
                     {
