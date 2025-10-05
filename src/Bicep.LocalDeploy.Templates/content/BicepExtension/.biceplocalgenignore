@@ -1,0 +1,17 @@
+﻿# Bicep Local DocGen Ignore File
+# Use this file to exclude files and directories from documentation generation
+
+# Build outputs
+**/bin/**
+**/obj/**
+
+# Version control
+**/.git/**
+
+# IDE files
+**/.vs/**
+**/.vscode/**
+**/.idea/**
+
+# Configuration (if it contains sensitive data)
+# Configuration.cs
