@@ -18,3 +18,4 @@ jobs:
           PROJECT_FILE_PATH: src/Bicep.LocalDeploy.Templates/Bicep.LocalDeploy.Templates.csproj
           VERSION_FILE_PATH: Nuget/Build.Templates.props
           TAG_COMMIT: false
+          NO_BUILD: true
