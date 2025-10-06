@@ -1,0 +1,29 @@
+﻿{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Bicep LocalDeploy Contributors",
+  "classifications": [ "Bicep", "Extension", "LocalDeploy" ],
+  "identity": "Bicep.LocalDeploy.Template",
+  "name": "Bicep Local Deploy Template",
+  "shortName": "bicep-ld-tpl",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "MyExtension",
+  "preferNameDirectory": true,
+  "symbols": {
+    "extensionName": {
+      "type": "parameter",
+      "datatype": "text",
+      "replaces": "MyExtension",
+      "defaultValue": "MyExtension",
+      "description": "The name of the extension"
+    },
+    "extensionVersion": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "0.0.1",
+      "description": "The version of the extension"
+    }
+  }
+}

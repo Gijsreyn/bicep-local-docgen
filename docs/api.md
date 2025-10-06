@@ -11,9 +11,9 @@ This requires adding the [Bicep.LocalDeploy][00] NuGet package to your project:
 dotnet add package Bicep.LocalDeploy
 ```
 
-## Generating Documentation
+## Generating documentation
 
-### Basic Usage
+### Basic usage
 
 ```csharp
 using Bicep.LocalDeploy.DocGenerator.Services;
@@ -30,7 +30,7 @@ var options = new GenerationOptions
 await DocumentationGenerator.GenerateAsync(options);
 ```
 
-### Advanced Configuration
+### Advanced configuration
 
 ```csharp
 var options = new GenerationOptions

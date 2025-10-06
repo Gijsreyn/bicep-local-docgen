@@ -3,8 +3,8 @@
 
 The Bicep.LocalDeploy.DocGenerator project is a documentation tool to generate
 Markdown files based on .NET Bicep models. It assists by reading the attributes
-from the model you have defined for your Bicep `local-deploy` and generating
-reference documentation(examples, arguments, and outputs).
+from the model files (`*.cs`) you have defined for your Bicep `local-deploy` and
+generating reference documentation (examples, arguments, and outputs).
 
 The `bicep-local-docgen` command-line utility (CLI) has two options
 available:
@@ -16,10 +16,11 @@ Each subcommand provides help information. If you call
 `bicep-local-docgen generate --help`, it shows you the help
 description for the options available.
 
-| Project                  | Description                                                            |
-|--------------------------|------------------------------------------------------------------------|
-| [Bicep.LocalDeploy][00]  | Library for Bicep model annotations                                    |
-| [bicep-local-docgen][01] | CLI utility to generate Markdown files from Bicep models (`*cs`) files |
+| Project                           | Description                                                                |
+|-----------------------------------|----------------------------------------------------------------------------|
+| [Bicep.LocalDeploy][00]           | Library for Bicep model annotations                                        |
+| [bicep-local-docgen][01]          | CLI utility to generate Markdown files from Bicep models (`*cs`) files     |
+| [Bicep.LocalDeploy.Templates][04] | .NET template package to bootstrap common `local-deploy` project structure |
 
 ## Getting started
 
@@ -42,6 +43,27 @@ want to see verbose message, add the `--verbose` option to log messages
 to the console.
 
 [For the full documentation, check it out on GitHub][03].
+
+## Starting from template package
+
+To quickly bootstrap a new Bicep `local-deploy` extension project, install
+the `Bicep.LocalDeploy.Templates` package and use the `dotnet new` command:
+
+```bash
+dotnet new install Bicep.LocalDeploy.Templates
+dotnet new bicep-ld-tpl -n MyExtension
+```
+
+This creates a complete project structure with example handlers, models,
+and configuration. The template includes the necessary package references
+and demonstrates best practices for building Bicep extensions. In the root
+of the project, a `build.ps1` file is added, allowing you to easily
+build and publish the Bicep extension locally. Simply open a PowerShell 7+
+terminal session and run `.\build.ps1`.
+
+> [!NOTE]
+> Make sure you change the .NET SDK version available on your system
+> after the template structure is created.
 
 ## Using attributes for documentation
 
@@ -158,3 +180,4 @@ for a jump start.
 [01]: https://www.nuget.org/packages/bicep-local-docgen
 [02]: CONTRIBUTING.md
 [03]: https://github.com/Gijsreyn/bicep-local-docgen/blob/main/docs/README.md
+[04]: https://www.nuget.org/packages/Bicep.LocalDeploy.Templates

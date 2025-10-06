@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>Project templates for bootstrapping Bicep Local Deploy extensions with complete project structure, sample handlers, and documentation attributes.</Description>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Copyright>© 2025 Gijs Reijn. All rights reserved.</Copyright>
+    <PackageType>Template</PackageType>
+    <PackageTags>Bicep;Template;LocalDeploy;Extension</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <None
+      Include="$(MSBuildThisFileDirectory)\..\src\Bicep.LocalDeploy.Templates\README.md"
+      Pack="true"
+      PackagePath="\"
+    />
+  </ItemGroup>
+</Project>
