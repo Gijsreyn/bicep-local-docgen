@@ -8,11 +8,14 @@ public enum ResourceStatus
     Active,
     Inactive,
     Pending,
-    Deleted
+    Deleted,
 }
 
 [BicepFrontMatter("category", "Sample")]
-[BicepDocHeading("SampleResource", "Represents a sample resource that demonstrates all available documentation attributes.")]
+[BicepDocHeading(
+    "SampleResource",
+    "Represents a sample resource that demonstrates all available documentation attributes."
+)]
 [BicepDocExample(
     "Creating a basic sample resource",
     "This example shows how to create a simple sample resource with required properties.",
@@ -48,7 +51,9 @@ public enum ResourceStatus
 }
 "
 )]
-[BicepDocCustom("Notes", @"When working with the `SampleResource` resource, ensure you have the extension imported in your Bicep file:
+[BicepDocCustom(
+    "Notes",
+    @"When working with the `SampleResource` resource, ensure you have the extension imported in your Bicep file:
 
 ```bicep
 // main.bicep
@@ -67,15 +72,19 @@ resource sample 'SampleResource' = {
 // main.bicepparam
 using 'main.bicep'
 param baseUrl = 'https://api.example.com'
-```")]
-[BicepDocCustom("Additional reference", @"For more information, see the following links:
+```"
+)]
+[BicepDocCustom(
+    "Additional reference",
+    @"For more information, see the following links:
 
 - [Sample Resource API Documentation][00]
 - [Best Practices Guide][01]
 
 <!-- Link reference definitions -->
 [00]: https://docs.example.com/api/sample-resource
-[01]: https://docs.example.com/guides/best-practices")]
+[01]: https://docs.example.com/guides/best-practices"
+)]
 [ResourceType("SampleResource")]
 public class SampleResource : SampleResourceIdentifiers
 {
@@ -109,18 +118,27 @@ public class SampleResource : SampleResourceIdentifiers
     public string? ResourceId { get; set; }
 
     // Read-only output property (epoch milliseconds)
-    [TypeProperty("The timestamp when the resource was created, in epoch milliseconds.", ObjectTypePropertyFlags.ReadOnly)]
+    [TypeProperty(
+        "The timestamp when the resource was created, in epoch milliseconds.",
+        ObjectTypePropertyFlags.ReadOnly
+    )]
     public int CreatedAt { get; set; }
 
     // Read-only output property (epoch milliseconds)
-    [TypeProperty("The timestamp when the resource was last updated, in epoch milliseconds.", ObjectTypePropertyFlags.ReadOnly)]
+    [TypeProperty(
+        "The timestamp when the resource was last updated, in epoch milliseconds.",
+        ObjectTypePropertyFlags.ReadOnly
+    )]
     public int UpdatedAt { get; set; }
 }
 
 public class SampleResourceIdentifiers
 {
     // Required identifier property
-    [TypeProperty("The unique name of the resource.", ObjectTypePropertyFlags.Identifier | ObjectTypePropertyFlags.Required)]
+    [TypeProperty(
+        "The unique name of the resource.",
+        ObjectTypePropertyFlags.Identifier | ObjectTypePropertyFlags.Required
+    )]
     public required string Name { get; set; }
 }
 

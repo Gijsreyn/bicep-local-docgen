@@ -20,7 +20,7 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
     where TIdentifiers : class
 {
     protected readonly ILogger _logger;
-    
+
     protected ResourceHandlerBase(ILogger logger)
     {
         _logger = logger;
@@ -28,7 +28,7 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
 
     protected static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
-        WriteIndented = false
+        WriteIndented = false,
     };
 
     /// <summary>
@@ -38,17 +38,19 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
     /// <returns>A configured HttpClient instance</returns>
     protected static HttpClient CreateClient(Configuration configuration)
     {
-        var client = new HttpClient
-        {
-            BaseAddress = new Uri(configuration.BaseUrl.TrimEnd('/'))
-        };
-        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        var client = new HttpClient { BaseAddress = new Uri(configuration.BaseUrl.TrimEnd('/')) };
+        client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json")
+        );
 
         // Try API_KEY environment variable for authentication
         var apiKey = Environment.GetEnvironmentVariable("API_KEY");
         if (!string.IsNullOrWhiteSpace(apiKey))
         {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                apiKey
+            );
         }
 
         return client;
@@ -69,12 +71,13 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
         HttpMethod method,
         string relativePath,
         CancellationToken ct,
-        object? payload = null)
+        object? payload = null
+    )
     {
         using var client = CreateClient(configuration);
-        
+
         var requestUri = $"{configuration.BaseUrl.TrimEnd('/')}/{relativePath.TrimStart('/')}";
-        
+
         _logger.LogInformation("Making {Method} request to {Uri}", method, requestUri);
 
         HttpResponseMessage response;
@@ -82,7 +85,7 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
         {
             var json = JsonSerializer.Serialize(payload, JsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            
+
             if (method == HttpMethod.Post)
             {
                 response = await client.PostAsync(requestUri, content, ct);
@@ -95,13 +98,15 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
             {
                 var request = new HttpRequestMessage(HttpMethod.Patch, requestUri)
                 {
-                    Content = content
+                    Content = content,
                 };
                 response = await client.SendAsync(request, ct);
             }
             else
             {
-                throw new InvalidOperationException($"Unsupported HTTP method with payload: {method}");
+                throw new InvalidOperationException(
+                    $"Unsupported HTTP method with payload: {method}"
+                );
             }
         }
         else
@@ -116,19 +121,26 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
             }
             else
             {
-                throw new InvalidOperationException($"Unsupported HTTP method without payload: {method}");
+                throw new InvalidOperationException(
+                    $"Unsupported HTTP method without payload: {method}"
+                );
             }
         }
 
         if (!response.IsSuccessStatusCode)
         {
             var body = await response.Content.ReadAsStringAsync(ct);
-            _logger.LogError("API call failed: {StatusCode} {Reason} Body={Body}", 
-                (int)response.StatusCode, response.ReasonPhrase, body);
+            _logger.LogError(
+                "API call failed: {StatusCode} {Reason} Body={Body}",
+                (int)response.StatusCode,
+                response.ReasonPhrase,
+                body
+            );
             throw new InvalidOperationException(
-                $"API call failed: {(int)response.StatusCode} {response.ReasonPhrase} Body={body}");
+                $"API call failed: {(int)response.StatusCode} {response.ReasonPhrase} Body={body}"
+            );
         }
-        
+
         if (typeof(T) == typeof(object) || response.Content.Headers.ContentLength == 0)
         {
             return default;
@@ -136,7 +148,7 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
 
         var responseBody = await response.Content.ReadAsStringAsync(ct);
         _logger.LogDebug("Response: {Response}", responseBody);
-        
+
         return JsonSerializer.Deserialize<T>(responseBody, JsonOptions);
     }
 
@@ -153,7 +165,8 @@ public abstract class ResourceHandlerBase<TProps, TIdentifiers>
         HttpMethod method,
         string relativePath,
         CancellationToken ct,
-        object? payload = null)
+        object? payload = null
+    )
     {
         await CallApiForResponse<object>(configuration, method, relativePath, ct, payload);
     }

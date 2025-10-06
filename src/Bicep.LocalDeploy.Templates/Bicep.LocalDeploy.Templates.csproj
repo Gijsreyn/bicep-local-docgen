@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageVersion>1.0.0</PackageVersion>
@@ -19,20 +18,16 @@
     <NoDefaultExcludes>true</NoDefaultExcludes>
     <NoBuild>true</NoBuild>
   </PropertyGroup>
-
   <ItemGroup>
     <Content Include="content\**\*" Exclude="content\**\bin\**;content\**\obj\**" />
     <Compile Remove="**\*" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\..\logo.png" Pack="true" PackagePath="">
       <Link>logo.png</Link>
     </None>
   </ItemGroup>
-
 </Project>
