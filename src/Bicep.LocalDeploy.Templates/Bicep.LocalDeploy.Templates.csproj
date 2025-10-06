@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageType>Template</PackageType>
-        <PackageVersion>1.0.0</PackageVersion>
         <PackageId>Bicep.LocalDeploy.Templates</PackageId>
         <Title>Bicep Local Deploy Extension Templates</Title>
         <Authors>Gijsreyn</Authors>
