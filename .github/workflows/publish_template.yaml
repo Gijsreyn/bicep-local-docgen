@@ -1,0 +1,20 @@
+name: Publish Template NuGet
+on:
+  push:
+    branches: [ main ]
+jobs:
+  publish-nuget:
+    runs-on: ubuntu-latest
+    name: publish template nuget
+    env:
+      NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v3
+      - name: Publish Bicep.LocalDeploy.Templates template package on version change
+        uses: alirezanet/publish-nuget@v3.1.0
+        with:
+          PACKAGE_NAME: Bicep.LocalDeploy.Templates
+          PROJECT_FILE_PATH: src/Bicep.LocalDeploy.Templates/Bicep.LocalDeploy.Templates.csproj
+          VERSION_FILE_PATH: Nuget/Build.Templates.props
+          TAG_COMMIT: false
