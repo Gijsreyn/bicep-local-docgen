@@ -1,33 +1,37 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <PackageType>Template</PackageType>
-    <PackageVersion>1.0.0</PackageVersion>
-    <PackageId>Bicep.LocalDeploy.Templates</PackageId>
-    <Title>Bicep Local Deploy Extension Templates</Title>
-    <Authors>Gijsreyn</Authors>
-    <Description>Templates for creating Bicep Local Deploy extension projects. Includes complete project structure with resource handlers, REST API integration, and documentation attributes.</Description>
-    <PackageTags>dotnet-new;templates;bicep;local-deploy;extension;bicep-extension</PackageTags>
-    <PackageProjectUrl>https://github.com/Gijsreyn/bicep-local-docgen</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <IncludeContentInPack>true</IncludeContentInPack>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <ContentTargetFolders>content</ContentTargetFolders>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
-    <NoDefaultExcludes>true</NoDefaultExcludes>
-    <NoBuild>true</NoBuild>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Include="content\**\*" Exclude="content\**\bin\**;content\**\obj\**" />
-    <Compile Remove="**\*" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\logo.png" Pack="true" PackagePath="">
-      <Link>logo.png</Link>
-    </None>
-  </ItemGroup>
+    <PropertyGroup>
+        <PackageType>Template</PackageType>
+        <PackageVersion>1.0.0</PackageVersion>
+        <PackageId>Bicep.LocalDeploy.Templates</PackageId>
+        <Title>Bicep Local Deploy Extension Templates</Title>
+        <Authors>Gijsreyn</Authors>
+        <Description>Templates for creating Bicep Local Deploy extension projects. Includes complete project structure with resource handlers, REST API integration, and documentation attributes.</Description>
+        <PackageTags>dotnet-new;templates;bicep;local-deploy;extension;bicep-extension</PackageTags>
+        <PackageProjectUrl>https://github.com/Gijsreyn/bicep-local-docgen</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <IncludeContentInPack>true</IncludeContentInPack>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <ContentTargetFolders>content</ContentTargetFolders>
+        <NoWarn>$(NoWarn);NU5128</NoWarn>
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+        <NoBuild>true</NoBuild>
+    </PropertyGroup>
+    <ItemGroup>
+        <Content Include="content\**\*" Exclude="content\**\bin\**;content\**\obj\**" />
+        <Compile Remove="**\*" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="..\..\logo.png" Pack="true" PackagePath="">
+            <Link>logo.png</Link>
+        </None>
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(TargetFrameworkIdentifier)' == ''">
+        <TargetFrameworkVersion>9.0</TargetFrameworkVersion>
+    </PropertyGroup>
 </Project>
