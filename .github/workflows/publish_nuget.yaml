@@ -43,10 +43,3 @@ jobs:
           PROJECT_FILE_PATH: src/Bicep.LocalDeploy.DocGenerator/Bicep.LocalDeploy.DocGenerator.csproj
           VERSION_FILE_PATH: Nuget/Build.DocGenerator.props
           TAG_COMMIT: true
-      - name: Publish Bicep.LocalDeploy.Templates template package on version change
-        uses: alirezanet/publish-nuget@v3.1.0
-        with:
-          PACKAGE_NAME: Bicep.LocalDeploy.Templates
-          PROJECT_FILE_PATH: src/Bicep.LocalDeploy.Templates/Bicep.LocalDeploy.Templates.csproj
-          VERSION_FILE_PATH: Nuget/Build.Templates.props
-          TAG_COMMIT: true
