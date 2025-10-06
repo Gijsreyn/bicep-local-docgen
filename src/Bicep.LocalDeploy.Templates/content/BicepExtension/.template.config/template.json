@@ -2,9 +2,9 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Bicep LocalDeploy Contributors",
   "classifications": [ "Bicep", "Extension", "LocalDeploy" ],
-  "identity": "Bicep.LocalDeploy.Extension",
-  "name": "Bicep Local Deploy Extension",
-  "shortName": "bicep-extension",
+  "identity": "Bicep.LocalDeploy.Template",
+  "name": "Bicep Local Deploy Template",
+  "shortName": "bicep-ld-tpl",
   "tags": {
     "language": "C#",
     "type": "project"

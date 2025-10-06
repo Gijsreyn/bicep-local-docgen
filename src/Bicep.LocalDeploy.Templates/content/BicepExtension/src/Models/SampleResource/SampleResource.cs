@@ -92,17 +92,13 @@ public class SampleResource : SampleResourceIdentifiers
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ResourceStatus? Status { get; set; }
 
-    // Optional writable numeric property
+    // Optional writable numeric property (default 0)
     [TypeProperty("Maximum number of retry attempts.")]
-    public int? MaxRetries { get; set; }
+    public int MaxRetries { get; set; }
 
-    // Optional writable numeric property
+    // Optional writable numeric property (default 0)
     [TypeProperty("Timeout in seconds for operations.")]
-    public int? TimeoutSeconds { get; set; }
-
-    // Optional writable dictionary property
-    [TypeProperty("Key-value pairs for resource tags.")]
-    public Dictionary<string, string>? Tags { get; set; }
+    public int TimeoutSeconds { get; set; }
 
     // Optional writable nested object property
     [TypeProperty("Additional metadata for the resource.")]
@@ -112,13 +108,13 @@ public class SampleResource : SampleResourceIdentifiers
     [TypeProperty("The unique identifier of the resource.", ObjectTypePropertyFlags.ReadOnly)]
     public string? ResourceId { get; set; }
 
-    // Read-only output property
-    [TypeProperty("The timestamp when the resource was created.", ObjectTypePropertyFlags.ReadOnly)]
-    public DateTime? CreatedAt { get; set; }
+    // Read-only output property (epoch milliseconds)
+    [TypeProperty("The timestamp when the resource was created, in epoch milliseconds.", ObjectTypePropertyFlags.ReadOnly)]
+    public int CreatedAt { get; set; }
 
-    // Read-only output property
-    [TypeProperty("The timestamp when the resource was last updated.", ObjectTypePropertyFlags.ReadOnly)]
-    public DateTime? UpdatedAt { get; set; }
+    // Read-only output property (epoch milliseconds)
+    [TypeProperty("The timestamp when the resource was last updated, in epoch milliseconds.", ObjectTypePropertyFlags.ReadOnly)]
+    public int UpdatedAt { get; set; }
 }
 
 public class SampleResourceIdentifiers
@@ -135,7 +131,4 @@ public class ResourceMetadata
 
     [TypeProperty("The version of the resource schema.")]
     public string? Version { get; set; }
-
-    [TypeProperty("Custom properties for the resource.")]
-    public Dictionary<string, object>? CustomProperties { get; set; }
 }

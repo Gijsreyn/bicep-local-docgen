@@ -108,7 +108,6 @@ public class SampleResourceHandler
             status = props.Status?.ToString(),
             maxRetries = props.MaxRetries,
             timeoutSeconds = props.TimeoutSeconds,
-            tags = props.Tags,
             metadata = props.Metadata
         };
 
@@ -134,7 +133,6 @@ public class SampleResourceHandler
             status = props.Status?.ToString(),
             maxRetries = props.MaxRetries,
             timeoutSeconds = props.TimeoutSeconds,
-            tags = props.Tags,
             metadata = props.Metadata
         };
 

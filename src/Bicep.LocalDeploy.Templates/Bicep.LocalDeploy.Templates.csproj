@@ -6,7 +6,7 @@
     <PackageId>Bicep.LocalDeploy.Templates</PackageId>
     <Title>Bicep Local Deploy Extension Templates</Title>
     <Authors>Gijsreyn</Authors>
-    <Description>Templates for creating Bicep Local Deploy extension projects. Includes complete project structure with resource handlers, REST API integration, and comprehensive documentation attributes.</Description>
+    <Description>Templates for creating Bicep Local Deploy extension projects. Includes complete project structure with resource handlers, REST API integration, and documentation attributes.</Description>
     <PackageTags>dotnet-new;templates;bicep;local-deploy;extension;bicep-extension</PackageTags>
     <PackageProjectUrl>https://github.com/Gijsreyn/bicep-local-docgen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
@@ -27,6 +27,12 @@
 
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\logo.png" Pack="true" PackagePath="">
+      <Link>logo.png</Link>
+    </None>
   </ItemGroup>
 
 </Project>
