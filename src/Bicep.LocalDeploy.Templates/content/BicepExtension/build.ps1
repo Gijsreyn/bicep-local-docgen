@@ -60,6 +60,13 @@ function getProjectPath ()
     return $projectPath.FullName
 }
 
+function getExeName($projectPath)
+{
+    [xml]$csprojXml = Get-Content $projectPath
+    $exeName = $csprojXml.Project.PropertyGroup.AssemblyName
+    return $exeName
+}
+
 function testBicepExe
 {
     $bicepExe = Get-Command bicep -CommandType Application -ErrorAction Ignore 
@@ -75,7 +82,7 @@ function testBicepExe
 $errorActionPreference = 'Stop'
 $outputDirectory = Join-Path $PSScriptRoot 'output'
 $dotNetExe = getNetPath
-$projectPath = getProjectPath $ProjectName
+$projectPath = getProjectPath
 
 if ($Clean.IsPresent)
 {
@@ -126,7 +133,7 @@ if ($Configuration -eq 'Release')
         'publish-extension'
     )
 
-    $exeName = (Split-Path $projectPath -LeafBase).Replace('.', '-').ToLower()
+    $exeName = getExeName $projectPath
     $targetName = Join-Path $outputDirectory $exeName
 
     foreach ($platform in $platforms)
@@ -143,7 +150,7 @@ if ($Configuration -eq 'Release')
                 '-o', $out
             )
     
-            Write-Verbose "Publishing project '$ProjectName' for platform '$platform' with" -Verbose
+            Write-Verbose "Publishing project for platform '$platform' with" -Verbose
             Write-Verbose ($publishParams | ConvertTo-Json | Out-String) -Verbose
             $res = & $dotNetExe @publishParams 
 
@@ -180,12 +187,6 @@ if ($Configuration -eq 'Release')
         Write-Verbose -Message "Compiling Bicep files for extension '$targetName'." -Verbose
         Write-Verbose -Message ($extensionParams | ConvertTo-Json | Out-String) -Verbose
         & $bicepExe @extensionParams
-
-        if ($Publish.IsPresent)
-        {
-            Write-Verbose -Message "Publishing extension to Bicep registry at '$bicepRegistryUrl'." -Verbose
-            & $bicepExe @containerParams
-        }
     }
     else
     {
