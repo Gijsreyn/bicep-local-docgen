@@ -4,7 +4,7 @@ on:
     branches: [ main ]
 jobs:
   publish-nuget:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     name: publish template nuget
     env:
       NUGET_KEY: ${{secrets.NUGET_API_KEY}}
