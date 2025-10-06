@@ -13,6 +13,10 @@
     <PackageTags>Bicep;Template;LocalDeploy;Extension</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)\..\src\Bicep.LocalDeploy.Templates\README.md" Pack="true" PackagePath="\" />
+    <None
+      Include="$(MSBuildThisFileDirectory)\..\src\Bicep.LocalDeploy.Templates\README.md"
+      Pack="true"
+      PackagePath="\"
+    />
   </ItemGroup>
 </Project>
