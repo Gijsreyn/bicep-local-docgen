@@ -44,3 +44,16 @@ customignore
 IAttribute
 IMarkdown
 wildcards
+bicepconfig
+bicepparam
+LASTEXITCODE
+Moq
+nologo
+osx
+TIdentifiers
+tpl
+TProps
+typeof
+typeparam
+winget
+xunit
