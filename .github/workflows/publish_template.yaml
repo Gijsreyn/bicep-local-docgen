@@ -11,8 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-dotnet@v3
-        with: 
-          dotnet-version: 9.0.x
       - name: Publish Bicep.LocalDeploy.Templates template package on version change
         uses: alirezanet/publish-nuget@v3.1.0
         with:
