@@ -34,7 +34,7 @@ Then, target a directory containing your Bicep model files. For example,
 the following command generates documentation in the `Models` directory:
 
 ```bash
-bicep-local-docgen generate --source Models
+bicep-local-docgen generate Models
 ```
 
 The CLI's default output is the `docs` directory. Use the `--output`
