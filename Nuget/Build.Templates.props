@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Gijsreyn/bicep-local-docgen</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -8,7 +8,7 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-    <Copyright>© 2025 Gijs Reijn. All rights reserved.</Copyright>
+    <Copyright>© 2026 Gijs Reijn. All rights reserved.</Copyright>
     <PackageType>Template</PackageType>
     <PackageTags>Bicep;Template;LocalDeploy;Extension</PackageTags>
   </PropertyGroup>
