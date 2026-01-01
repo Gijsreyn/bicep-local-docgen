@@ -57,3 +57,6 @@ typeof
 typeparam
 winget
 xunit
+buildtransitive
+contentfiles
+XPlat

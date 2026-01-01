@@ -7,7 +7,7 @@ namespace MyExtension.Tests.Handlers;
 /// <summary>
 /// Unit tests for SampleResourceHandler.
 /// These tests demonstrate testing patterns for Bicep Local Deploy resource handlers.
-/// 
+///
 /// NOTE: These are example tests showing the testing patterns. For a real implementation,
 /// you would need to mock HTTP calls or abstract the API layer into a testable service.
 /// See the Bicep Local Deploy Unit Testing Guide for dependency injection patterns:
@@ -24,7 +24,7 @@ public class SampleResourceHandlerTests
     {
         // Initialize mock logger
         _mockLogger = new Mock<ILogger<SampleResourceHandler>>();
-        
+
         // Create the handler with mocked logger
         _handler = new SampleResourceHandler(_mockLogger.Object);
     }
@@ -37,11 +37,11 @@ public class SampleResourceHandlerTests
     public void SampleResource_WithRequiredName_CreatesValidInstance()
     {
         // Arrange & Act
-        var properties = new SampleResource 
-        { 
+        var properties = new SampleResource
+        {
             Name = "test-resource",
             Description = "Test description",
-            IsEnabled = true
+            IsEnabled = true,
         };
 
         // Assert
@@ -59,16 +59,10 @@ public class SampleResourceHandlerTests
     [DataRow("simple-name", "Simple Name")]
     [DataRow("complex-name-123", "Complex Name")]
     [DataRow("unicode-name", "Unicode: 你好")]
-    public void SampleResource_WithVariousInputs_HandlesCorrectly(
-        string name, 
-        string description)
+    public void SampleResource_WithVariousInputs_HandlesCorrectly(string name, string description)
     {
         // Arrange & Act
-        var properties = new SampleResource 
-        { 
-            Name = name,
-            Description = description
-        };
+        var properties = new SampleResource { Name = name, Description = description };
 
         // Assert
         properties.Should().NotBeNull();
@@ -90,7 +84,7 @@ public class SampleResourceHandlerTests
             IsEnabled = true,
             Status = ResourceStatus.Active,
             MaxRetries = 3,
-            TimeoutSeconds = 30
+            TimeoutSeconds = 30,
         };
 
         // Assert
@@ -112,11 +106,7 @@ public class SampleResourceHandlerTests
     public void SampleResource_WithValidStatus_AcceptsAllEnumValues(ResourceStatus status)
     {
         // Arrange & Act
-        var resource = new SampleResource
-        {
-            Name = "test",
-            Status = status
-        };
+        var resource = new SampleResource { Name = "test", Status = status };
 
         // Assert
         resource.Status.Should().Be(status);
