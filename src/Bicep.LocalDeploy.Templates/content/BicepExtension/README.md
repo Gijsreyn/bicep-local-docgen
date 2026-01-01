@@ -100,6 +100,12 @@ MyExtension/
     ResourceHandlerBase.cs    # Base handler with REST API helpers
     SampleHandler/
       SampleResourceHandler.cs # Sample resource handler
+ Tests/                       # Unit test project
+    MyExtension.Tests.csproj  # Test project file
+    GlobalUsings.cs           # Global test usings
+    README.md                 # Testing documentation
+    Handlers/
+      MyResourceHandlerTests.cs # Sample handler tests
 ```
 
 ## Customization
@@ -251,39 +257,76 @@ Generate documentation for your new resource:
 bicep-local-docgen generate . --output docs
 ```
 
-#### 7. Write tests (optional)
+#### 7. Write tests
 
-Create a test project to validate your handler logic:
+The template includes a comprehensive test project under `Tests/` that follows best practices from the [Bicep Local Deploy Unit Testing Guide](https://github.com/Azure/bicep/blob/main/docs/experimental/local-deploy-dotnet-unittesting-guide.md).
+
+**Test project structure:**
+- Uses MSTest for test framework
+- Moq for mocking dependencies
+- FluentAssertions for readable assertions
+- Includes sample handler tests demonstrating common patterns
+
+**Running tests:**
 
 ```bash
-dotnet new xunit -n MyExtension.Tests
-cd MyExtension.Tests
-dotnet add reference ../MyExtension.csproj
-dotnet add package Moq
+# Run all tests
+dotnet test
+
+# Run with detailed output
+dotnet test --logger "console;verbosity=detailed"
+
+# Run specific test class
+dotnet test --filter "FullyQualifiedName~MyResourceHandlerTests"
+
+# Run with code coverage
+dotnet test --collect:"XPlat Code Coverage"
 ```
 
-Example test:
+**Adding tests for your handler:**
+
+Create a new test file in `Tests/Handlers/` for your handler:
 
 ```csharp
-using Xunit;
-using Moq;
-using MyExtension.Handlers.MyHandler;
+namespace MyExtension.Tests.Handlers;
 
+[TestClass]
 public class MyResourceHandlerTests
 {
-    [Fact]
-    public async Task CreateOrUpdate_CreatesNewResource_WhenNotExists()
+    private Mock<IHttpClientFactory>? _mockFactory;
+    private Mock<ILogger<MyResourceHandler>>? _mockLogger;
+    private MyResourceHandler? _handler;
+
+    [TestInitialize]
+    public void Setup()
+    {
+        _mockFactory = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+        _mockLogger = new Mock<ILogger<MyResourceHandler>>();
+        _handler = new MyResourceHandler(_mockFactory.Object, _mockLogger.Object);
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        _mockFactory?.VerifyAll();
+    }
+
+    [TestMethod]
+    public async Task CreateOrUpdate_WithValidInput_ReturnsSuccess()
     {
         // Arrange
-        var mockFactory = new Mock<IHttpClientFactory>();
-        var mockLogger = new Mock<ILogger<MyResourceHandler>>();
-        var handler = new MyResourceHandler(mockFactory.Object, mockLogger.Object);
+        var properties = new MyResource { Name = "test" };
         
-        // Act & Assert
-        // Add your test logic here
+        // Act
+        var result = await _handler!.CreateOrUpdate(properties, CancellationToken.None);
+        
+        // Assert
+        result.Should().NotBeNull();
     }
 }
 ```
+
+See `Tests/README.md` for detailed testing documentation and patterns.
 
 ### Documentation attributes
 
@@ -300,9 +343,37 @@ For more information, check out the documentation on [GitHub](https://github.com
 
 ### Build and publish extension
 
+Run the build script to compile and publish your extension:
+
 ```powershell
 .\build.ps1
 ```
+
+The build script will:
+1. Clean previous builds (if `-Clean` flag is used)
+2. Build the extension project
+3. Run unit tests (if Tests project exists)
+4. Publish the extension for multiple platforms (win-x64, linux-x64, osx-x64)
+5. Package the extension using Bicep CLI
+
+### Running tests
+
+The template includes a comprehensive test suite. Tests are automatically run during the Release build:
+
+```powershell
+# Build and run tests
+.\build.ps1
+
+# Run tests only (from Tests directory)
+cd Tests
+dotnet test
+
+# Run with code coverage
+cd Tests
+dotnet test --collect:"XPlat Code Coverage"
+```
+
+For more information on testing, see [Tests/README.md](Tests/README.md).
 
 ## Generating documentation
 

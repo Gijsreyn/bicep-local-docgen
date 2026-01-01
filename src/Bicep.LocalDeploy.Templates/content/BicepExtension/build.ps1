@@ -128,6 +128,37 @@ if ($Configuration -eq 'Release')
         Pop-Location
     }
 
+    # Run tests
+    $testProjectPath = Join-Path $PSScriptRoot 'Tests'
+    if (Test-Path $testProjectPath)
+    {
+        try
+        {
+            Push-Location $testProjectPath
+            $testParams = @(
+                'test',
+                '-c', $Configuration
+            )
+
+            Write-Verbose "Running tests with" -Verbose
+            Write-Verbose ($testParams | ConvertTo-Json | Out-String) -Verbose
+            $res = & $dotNetExe @testParams
+
+            if ($LASTEXITCODE -ne 0)
+            {
+                throw "Tests failed"
+            }
+        }
+        finally
+        {
+            Pop-Location
+        }
+    }
+    else
+    {
+        Write-Verbose "No test project found at '$testProjectPath'. Skipping tests." -Verbose
+    }
+
     $platforms = @('win-x64', 'linux-x64', 'osx-x64')
     $extensionParams = @(
         'publish-extension'
