@@ -403,8 +403,8 @@ namespace MyExt.ModelA
     [ResourceType("ModelA.SimpleResource")]
     public class SimpleResource
     {
-        [TypeProperty("Simple Value.", ObjectTypePropertyFlags.None)]
-        public string? Value { get; set; }
+        [TypeProperty("Simple Value A", ObjectTypePropertyFlags.None)]
+        public string? ValueA { get; set; }
     }
 }
 
@@ -413,8 +413,8 @@ namespace MyExt.ModelB
     [ResourceType("ModelB.SimpleResource")]
     public class SimpleResource
     {
-        [TypeProperty("Simple Value.", ObjectTypePropertyFlags.None)]
-        public string? Value { get; set; }
+        [TypeProperty("Simple Value B", ObjectTypePropertyFlags.None)]
+        public string? ValueB { get; set; }
     }
 }
 """;
