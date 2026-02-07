@@ -11,7 +11,7 @@ public class DocGeneratorTests
 {
     private static string ReadFile(string path) => File.ReadAllText(path, Encoding.UTF8);
 
-    private static async Task<string> GenerateMarkdownAsync(string csSource, string h1Contains)
+    private static async Task<Dictionary<string, string>> GenerateMarkdownFilesAsync(string csSource)
     {
         DirectoryInfo outDir = Directory.CreateTempSubdirectory("docgen-out-");
         DirectoryInfo srcDir = Directory.CreateTempSubdirectory("docgen-src-");
@@ -32,16 +32,13 @@ public class DocGeneratorTests
             await DocumentationGenerator.GenerateAsync(options);
 
             string[] files = Directory.GetFiles(outDir.FullName, "*.md");
-            Assert.That(files, Is.Not.Empty, "No markdown files were generated");
-            foreach (string f in files)
+
+            var results = new Dictionary<string, string>();
+            foreach (string file in files)
             {
-                string content = ReadFile(f);
-                if (content.Contains("# " + h1Contains, StringComparison.Ordinal))
-                {
-                    return content;
-                }
+                results.Add(file, ReadFile(file));
             }
-            return ReadFile(files.First());
+            return results;
         }
         finally
         {
@@ -60,6 +57,19 @@ public class DocGeneratorTests
             { /* ignore */
             }
         }
+    }
+
+    private static async Task<string> GenerateMarkdownAsync(string csSource, string h1Contains)
+    {
+        var output = await GenerateMarkdownFilesAsync(csSource);
+        foreach (var file in output)
+        {
+            if (file.Value.Contains("# " + h1Contains, StringComparison.Ordinal))
+            {
+                return file.Value;
+            }
+        }
+        return output.Values.First();
     }
 
     [Test]
@@ -378,5 +388,39 @@ public class EnumMany
 
         string md = await GenerateMarkdownAsync(cs, "EnumMany");
         Assert.That(md, Does.Contain("(Can be `A`, `B`, or `C`)"));
+    }
+
+
+    [Test]
+    public async Task DuplicateClassNameUniqueResourceNames()
+    {
+        string cs = """
+using Bicep.LocalDeploy;
+using Bicep.Local.Extension.Types.Attributes;
+
+namespace MyExt.ModelA
+{
+    [ResourceType("ModelA.SimpleResource")]
+    public class SimpleResource
+    {
+        [TypeProperty("Simple Value.", ObjectTypePropertyFlags.None)]
+        public string? Value { get; set; }
+    }
+}
+
+namespace MyExt.ModelB
+{
+    [ResourceType("ModelB.SimpleResource")]
+    public class SimpleResource
+    {
+        [TypeProperty("Simple Value.", ObjectTypePropertyFlags.None)]
+        public string? Value { get; set; }
+    }
+}
+""";
+        var outputFiles = await GenerateMarkdownFilesAsync(cs);
+
+        Assert.That(outputFiles, Has.Exactly(1).Matches<KeyValuePair<string, string>>(kv => kv.Value.Contains("# ModelA.SimpleResource", StringComparison.OrdinalIgnoreCase)));
+        Assert.That(outputFiles, Has.Exactly(1).Matches<KeyValuePair<string, string>>(kv => kv.Value.Contains("# ModelB.SimpleResource", StringComparison.OrdinalIgnoreCase)));
     }
 }
