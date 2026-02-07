@@ -37,10 +37,9 @@ namespace Bicep.LocalDeploy.DocGenerator.Services
             }
 
             // Build lookup for type nesting
-            IReadOnlyDictionary<string, TypeInfoModel> typeLookup = analysis.Types.ToDictionary(
-                t => t.Name,
-                t => t
-            );
+            IReadOnlyDictionary<string, TypeInfoModel> typeLookup = analysis
+                .Types.GroupBy(t => t.Name)
+                .ToDictionary(g => g.Key, g => g.First());
 
             foreach (TypeInfoModel type in resources)
             {
